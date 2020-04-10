@@ -6,11 +6,11 @@ import { Dispatch } from 'redux'
 import { connect } from 'react-redux'
 import Dialog from "react-native-dialog"
 import { Route } from '../domains/Route'
-import RouteHistoryListMenu from './RouteHistoryListMenu'
+import RouteHistoryListMenu from '../components/RouteHistoryListMenu'
 import {
   createRoute, renameRoute, loadRoute, saveRoute, setRouteHistoryPopupMenuVisible,
   deleteRoute, setRouteNameEntryDialogVisible
-} from '../Reducer'
+} from '../actions/RouteActions'
 
 export class RouteHistory extends React.Component<RouteHistoryProps> {
   currentRouteName = ''

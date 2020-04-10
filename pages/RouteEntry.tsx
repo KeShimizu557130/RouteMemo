@@ -4,9 +4,9 @@ import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { Drive } from '../domains/Drive';
 import { Route } from '../domains/Route';
-import DriveList from './DriveList';
-import PointNameDialog, { PointNameDialogState } from './PointNameDialog';
-import { addNewRecord, addPointName, loadAllRoutes, saveRoute } from '../Reducer'
+import DriveList from '../components/DriveList';
+import PointNameDialog, { PointNameDialogState } from '../components/PointNameDialog';
+import { addPointName, loadAllRoutes, saveRoute, addNewRecord } from '../actions/RouteActions'
 import AppStorage from '../AppStorage'
 
 const appStorage = new AppStorage()
@@ -70,24 +70,6 @@ export class RouteEntry extends React.Component<RouteEntryProps> {
     }
   }
 
-  // componentDidMount = () => {
-  //   AppState.addEventListener('change', this.handleAppStateChange);
-  // };
-
-  // componentWillUnmount = () => {
-  //   AppState.removeEventListener('change', this.handleAppStateChange);
-  // };
-
-  // handleAppStateChange = nextAppState => {
-  //   if (
-  //     this.state.appState.match(/inactive|background/) &&
-  //     nextAppState === 'active'
-  //   ) {
-  //     console.log('App has come to the foreground!');
-  //   }
-  //   this.setState({ appState: nextAppState });
-  // };
-
   viewStore = () => {
     console.log('allRoutes:' + JSON.stringify(this.props.allRoutes))
     console.log('currentRoute:' + JSON.stringify(this.props.currentRoute))
@@ -138,14 +120,15 @@ const styles = StyleSheet.create({
 })
 
 const mapStateToProps = state => ({
-  // storeは巨大なJsonの塊なので、nameにjsonから取って来たデータを代入している。 
+  // storeは巨大なJsonの塊なので、nameにjsonから取って来たデータを代入している。
+  name: state.sample.name, 
   allRoutes: state.user.allRoutes,
   currentRoute: state.user.currentRoute,
   currentRouteId: state.user.currentRouteId,
   isModalVisible: state.user.isModalVisible
 })
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
+const mapDispatchToProps = (dispatch: any) => ({
   addNewRecord: () => dispatch(addNewRecord()),
   addPointName: (newPointName: string) => dispatch(addPointName(newPointName)),
   loadAllRoutes: (routes: Route[], currentRouteId: number) => dispatch(loadAllRoutes(routes, currentRouteId)),

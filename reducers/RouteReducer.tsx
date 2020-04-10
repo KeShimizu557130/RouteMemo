@@ -1,69 +1,7 @@
-import { combineReducers, createStore } from 'redux';
-import { Drive, DriveImpl, DriveCondition } from './domains/Drive';
-import { Route, RouteImpl } from './domains/Route';
-import { dateFormat } from './util/dateFormat'
+import { Drive, DriveImpl, DriveCondition } from '../domains/Drive';
+import { Route, RouteImpl } from '../domains/Route';
+import { dateFormat } from '../util/dateFormat'
 
-// actions.js
-// actionはreduxの機能でなく、オブジェクトを作るための純粋なjsの関数です。
-export const addNewRecord = () => ({
-  type: 'ADD_NEW_RECORD'
-})
-
-export const addPointName = (newPointName: string) => ({
-  type: 'ADD_POINT_NAME',
-  pointName: newPointName
-})
-
-export const loadAllRoutes = (routes: Route[], currentRouteId: number) => ({
-  type: 'LOAD_ALL_ROUTES',
-  routes: routes,
-  currentRouteId: currentRouteId
-})
-
-export const loadRoute = (route: Route) => ({
-  type: 'LOAD_ROUTE',
-  route: route
-})
-
-export const saveRoute = () => ({
-  type: 'SAVE_ROUTE'
-})
-
-export const createRoute = () => ({
-  type: 'CREATE_ROUTE'
-})
-
-export const renameRoute = (routeId: number, newRouteName: string) => ({
-  type: 'RENAME_ROUTE',
-  routeId: routeId,
-  newRouteName: newRouteName
-})
-
-export const setRouteHistoryPopupMenuVisible = (visible: boolean) => ({
-  type: 'SET_ROUTE_HISTORY_POPUPMENU_VISIBLE',
-  visible: visible
-})
-
-export const deleteRoute = () => ({
-  type: 'DELETE_ROUTE'
-})
-
-export const setRouteNameEntryDialogVisible = (visible: boolean) => ({
-  type: 'SET_ROUTE_NAME_ENTRY_DIALOG_VISIBLE',
-  visible: visible
-})
-
-/**
- * 新規ルート生成
- */
-const createNewRoute = (): Route => {
-  const now = new Date()
-  const newCurrentRoute = new RouteImpl(
-    now.getTime(),
-    dateFormat.format(now, 'yyyy/MM/dd hh:mm') + 'のルート'
-  )
-  return newCurrentRoute
-}
 
 /**
  * stateの初期値
@@ -86,7 +24,7 @@ const initState = () => {
 // reduxではglobal stateを巨大なjson(store)として管理します。stateの変更はjsonの書き換えによってのみ管理します。
 // actionは純粋なjsのオブジェクトを作る関数であることを思い出してください。
 // reducerはactionで生成されたオブジェクトを受け取り、巨大なjson(store)を書き換える関数です。
-const reducer = (state = initState(), action) => {
+ export default (state = initState(), action) => {
   switch (action.type) {
     // ドライブレコード追加
     case 'ADD_NEW_RECORD': {
@@ -306,23 +244,14 @@ const getLatestDrive = (drives: Drive[]): Drive => {
   return drives[drives.length - 1];
 }
 
-export const reducers = combineReducers({
-  user: reducer
-})
-
-// store.js
-export const store = createStore(reducers)
-
-// storeは巨大なjsonです。storeの中身を取り出すにはgetStateメソッドを使います。
-// エミュレータでcommand + dを押し、enable remote debugをクリックしましょう。
-// debuggerが現れるので、consoleタブをクリックし、エミュレータ上でアプリをcommandd + rで再起動しましょう。
-console.log(store.getState)
-
-// arrayやobjectを綺麗に表示したい時はconsole.tableが便利です。
-console.table(store.getState)
-
-// storeはjsonです。つまりjsのオブジェクトです。 jsの関数のtypeofでstoreのstateがオブジェクトであることを確かめましょう。
-console.log(typeof store.getState)
-
-// storeもまたjsのオブジェクトであり、４つしかメソッドを持たないことを確認しておきましょう。
-console.log(store)
+/**
+ * 新規ルート生成
+ */
+const createNewRoute = (): Route => {
+  const now = new Date()
+  const newCurrentRoute = new RouteImpl(
+    now.getTime(),
+    dateFormat.format(now, 'yyyy/MM/dd hh:mm') + 'のルート'
+  )
+  return newCurrentRoute
+}
