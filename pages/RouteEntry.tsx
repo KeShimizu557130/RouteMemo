@@ -1,50 +1,45 @@
 import * as React from 'react';
 import { View, Button, StyleSheet, FlatList } from 'react-native';
-import { Dispatch } from 'redux';
-import { connect } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { Drive } from '../domains/Drive';
-import { Route } from '../domains/Route';
 import DriveList from '../components/DriveList';
 import PointNameDialog, { PointNameDialogState } from '../components/PointNameDialog';
 import { addPointName, loadAllRoutes, saveRoute, addNewRecord } from '../actions/RouteActions'
 import AppStorage from '../AppStorage'
 
-const appStorage = new AppStorage()
-
 /**
  * ApplicationComponent
  */
-export class RouteEntry extends React.Component<RouteEntryProps> {
-  /**
-   * render main view.
-   */
-  render() {
-    return (
-      <View style={styles.container}>
-        <FlatList<Drive>
-          data={this.props.currentRoute.drives}
-          renderItem={value => this.renderList(value.item)}
-          keyExtractor={value => `${value.id}`}
-        />
-        <View>
-          <Button title="Record" onPress={this.handleRecordBtnClick} />
-          <Button title="Store" onPress={this.store} />
-          <Button title="Restore" onPress={this.restore} />
-          <Button title="ViewStore" onPress={this.viewStore} />
-        </View>
-        <PointNameDialog
-          isModalVisible={this.props.isModalVisible}
-          onDialogDismiss={this.handleDialogDismiss}
-        />
-      </View>
-    )
-  }
+export default () => {
+   return (
+    <View style={styles.container}>
+        <RouteArea/>
+        <ButtonArea/>
+        <ModalArea/>
+    </View>     
+   )
+}
+
+/**
+ * ルート表示領域
+ */
+const RouteArea = () => {
+
+  const currentRoute = useSelector(state => state.user.currentRoute);
+
+  return (
+    <FlatList<Drive>
+      data={currentRoute.drives}
+      renderItem={value => renderList(value.item)}
+      keyExtractor={value => `${value.id}`}
+    />
+  )
 
   /**
-   * render drive process list
+   * リスト描画
+   * @param item 
    */
-  renderList = (item: Drive) => {
-    //Optional型のアンラップはもう少し丁寧にやる
+  function renderList(item: Drive)  {
     return (
       <DriveList
         pointName={item.pointName!}
@@ -53,60 +48,92 @@ export class RouteEntry extends React.Component<RouteEntryProps> {
       />
     )
   }
+}
+
+/**
+ * ボタン表示領域
+ */
+const ButtonArea = () => {
+
+  const appStorage     = new AppStorage()
+  const allRoutes      = useSelector(state => state.user.allRoutes);
+  const currentRoute   = useSelector(state => state.user.currentRoute);
+  const currentRouteId = useSelector(state => state.user.currentRouteId);
+  const dispatch       = useDispatch();
+
+  return (
+    <View>
+      <Button title="Record"    onPress={handleRecordBtnClick} />
+      <Button title="Store"     onPress={handleStoreBtnClick} />
+      <Button title="Restore"   onPress={handleRecordBtnClick} />
+      <Button title="ViewStore" onPress={dumpStore} />
+    </View>
+  )
 
   /**
    * Recordボタン押下時の処理
    */
-  handleRecordBtnClick = () => {
-    this.props.addNewRecord()
+  function handleRecordBtnClick() {
+    dispatch(addNewRecord());
   }
 
   /**
-   * モーダルダイアログで発生したイベントハンドリング
+   * Storeボタン押下時の処理
    */
-  handleDialogDismiss = (value: PointNameDialogState) => {
-    if (value !== undefined) {
-      this.props.addPointName(value.pointName)
-    }
-  }
-
-  viewStore = () => {
-    console.log('allRoutes:' + JSON.stringify(this.props.allRoutes))
-    console.log('currentRoute:' + JSON.stringify(this.props.currentRoute))
-    console.log('currentRouteId:' + JSON.stringify(this.props.currentRouteId))
-  }
-
-  /**
-   * 現在入力中のルートだけをストレージに保存する
-   * アプリが非表示になったときとかに呼ばれる想定だけど未実装
-   */
-  storeData = () => {
-    appStorage.saveCurrentRoute(this.props.currentRoute.drives)
-  }
-
-  /**
-   * 全ルートのデータをストレージに保存
-   */
-  store = () => {
-    const newRoutes = this.props.allRoutes.map(value => {
-      if (value.id !== this.props.currentRouteId) return value
-      return { ...this.props.currentRoute }
+  function handleStoreBtnClick() {
+    //TODO: この処理はThunkに持っていく
+    const newRoutes = allRoutes.map(value => {
+      if (value.id !== currentRouteId) return value
+      return { ...currentRoute }
     })
-    if (newRoutes.length === 0) newRoutes.push(this.props.currentRoute)
-
-    appStorage.saveAllRoutes(newRoutes, this.props.currentRouteId)
+    if (newRoutes.length === 0) newRoutes.push(currentRoute)
+    appStorage.saveAllRoutes(newRoutes, currentRouteId)
   }
 
   /**
-   * ストレージに保存されている全ルートをstoreにロード
+   * Restoreボタン押下時の処理
    */
-  restore = async () => {
+  async function handleRestoreBtnClick() {
     try {
       const routesAndCurrent = await appStorage.loadAllRoutes()
       this.props.loadAllRoutes(routesAndCurrent.allRoutes, routesAndCurrent.currentRouteId)
     } catch (error) {
       console.warn('err:' + error)
     }
+  }
+
+  /**
+   * デバッグ用
+   */
+  function dumpStore() {
+    console.log('allRoutes:' + JSON.stringify(allRoutes))
+    console.log('currentRoute:' + JSON.stringify(currentRoute))
+    console.log('currentRouteId:' + JSON.stringify(currentRouteId))
+  }
+
+}
+
+/**
+ * モーダル表示領域
+ */
+const ModalArea = () => {
+
+  const isModalVisible = useSelector(state => state.user.isModalVisible);
+  const dispatch = useDispatch();
+
+  return (
+    <PointNameDialog
+      isModalVisible={isModalVisible}
+      onDialogDismiss={handleDialogDismiss}
+    />
+  )
+
+  /**
+   * モーダル制御
+   * @param value 
+   */
+  function handleDialogDismiss(value: PointNameDialogState) {
+    if (value !== undefined) dispatch(addPointName(value.pointName))
   }
 }
 
@@ -118,28 +145,3 @@ const styles = StyleSheet.create({
     flex: 1
   }
 })
-
-const mapStateToProps = state => ({
-  // storeは巨大なJsonの塊なので、nameにjsonから取って来たデータを代入している。
-  name: state.sample.name, 
-  allRoutes: state.user.allRoutes,
-  currentRoute: state.user.currentRoute,
-  currentRouteId: state.user.currentRouteId,
-  isModalVisible: state.user.isModalVisible
-})
-
-const mapDispatchToProps = (dispatch: any) => ({
-  addNewRecord: () => dispatch(addNewRecord()),
-  addPointName: (newPointName: string) => dispatch(addPointName(newPointName)),
-  loadAllRoutes: (routes: Route[], currentRouteId: number) => dispatch(loadAllRoutes(routes, currentRouteId)),
-  saveRoute: () => dispatch(saveRoute())
-})
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(RouteEntry)
-
-type StateProps = ReturnType<typeof mapStateToProps>
-type DispatchProps = ReturnType<typeof mapDispatchToProps>
-type RouteEntryProps = StateProps & DispatchProps

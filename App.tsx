@@ -23,13 +23,10 @@ const AppContainer = createAppContainer(RootStack);
 /**
  * ApplicationComponent
  */
-export default class Root extends React.Component {
-
-  render() {
-    return (
-      <Provider store={store}>
-        <AppContainer />
-      </Provider>
-    )
-  }
+export default () => {
+  return (
+    <Provider store={store}>
+      <AppContainer />
+    </Provider>
+  )
 }
