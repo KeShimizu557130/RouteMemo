@@ -7,6 +7,7 @@ import PointNameDialog, { PointNameDialogState } from '../components/PointNameDi
 import { addNewRecord, loadAllRoutes, addPointName } from '../reducers/RouteReducer'
 import { AppStateInterface } from '../store/store'
 import AppStorage from '../AppStorage'
+import { saveRoute } from '../thunk/RouteThunk'
 
 /**
  * ApplicationComponent
@@ -82,13 +83,7 @@ const ButtonArea = () => {
    * Storeボタン押下時の処理
    */
   function handleStoreBtnClick() {
-    //TODO: この処理はThunkに持っていく
-    const newRoutes = allRoutes.map(value => {
-      if (value.id !== currentRouteId) return value
-      return { ...currentRoute }
-    })
-    if (newRoutes.length === 0) newRoutes.push(currentRoute)
-    appStorage.saveAllRoutes(newRoutes, currentRouteId)
+    dispatch(saveRoute());
   }
 
   /**

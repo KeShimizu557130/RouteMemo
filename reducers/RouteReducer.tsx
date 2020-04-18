@@ -100,7 +100,7 @@ const routeModule = createSlice({
       state.currentRouteId = newCurrentRoute.id
     },
     // actionで渡された全ルートをstateに保存
-    loadAllRoutes: (state: RouteReducerInterface, action: PayloadAction<loadAllRoutesPayload>) => {
+    loadAllRoutes: (state: RouteReducerInterface, action: PayloadAction<{routes: Route[], currentRouteId: number}>) => {
       const newRoutes = [...action.payload.routes]
       let newCurrentRouteId = action.payload.currentRouteId
       // 現在のルートを読み込み

@@ -1,10 +1,10 @@
 import { createStore, applyMiddleware } from 'redux'
 import thunkMiddleware from 'redux-thunk'
 import { combineReducers } from '@reduxjs/toolkit'
-import routeModule from '../reducers/RouteReducer'
+import routeModule, { RouteReducerInterface } from '../reducers/RouteReducer'
 
 export interface AppStateInterface {
-  route: any
+  route: RouteReducerInterface
 }
 
 const rootReducer = combineReducers({
