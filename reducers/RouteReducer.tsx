@@ -12,16 +12,6 @@ export interface RouteReducerInterface {
   isRouteNameEntryDialogVisible: boolean
 }
 
-interface loadAllRoutesPayload {
-  routes: Route[]
-  currentRouteId: number
-}
-
-interface renameRoutePayload {
-  routeId: number
-  newRouteName: string
-}
-
 /**
  * 新規ルート生成
  */
@@ -57,7 +47,7 @@ const routeModule = createSlice({
   initialState: initialState,
   reducers: {
     // ドライブレコード追加
-    addNewRecord: (state: RouteReducerInterface, action) => {
+    addNewRecord: (state: RouteReducerInterface) => {
       const newDrives = addNewRecordImpl(state.currentRoute.drives)
       const latestDrive = getLatestDrive(newDrives)
       const newCurretRoute = {
@@ -82,7 +72,7 @@ const routeModule = createSlice({
       state.isModalVisible = false
     },
     // ルート新規生成
-    createRoute: (state: RouteReducerInterface, action) => {
+    createRoute: (state: RouteReducerInterface) => {
       // currentRouteをallRoutesに保存する
       let issaved = false
       const newRoutes = state.allRoutes.map(value => {
@@ -100,7 +90,7 @@ const routeModule = createSlice({
       state.currentRouteId = newCurrentRoute.id
     },
     // actionで渡された全ルートをstateに保存
-    loadAllRoutes: (state: RouteReducerInterface, action: PayloadAction<{routes: Route[], currentRouteId: number}>) => {
+    loadAllRoutes: (state: RouteReducerInterface, action: PayloadAction<{ routes: Route[], currentRouteId: number }>) => {
       const newRoutes = [...action.payload.routes]
       let newCurrentRouteId = action.payload.currentRouteId
       // 現在のルートを読み込み
@@ -142,7 +132,7 @@ const routeModule = createSlice({
       state.allRoutes = newRoutes
     },
     // ルート名変更
-    renameRoute: (state: RouteReducerInterface, action: PayloadAction<renameRoutePayload>) => {
+    renameRoute: (state: RouteReducerInterface, action: PayloadAction<{ routeId: number, newRouteName: string }>) => {
       const newRoutes = renameRouteImpl(state.allRoutes, action.payload.routeId, action.payload.newRouteName)
       if (state.currentRouteId !== action.payload.routeId) {
         state.allRoutes = newRoutes

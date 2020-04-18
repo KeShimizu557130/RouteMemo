@@ -92,7 +92,7 @@ const ButtonArea = () => {
   async function handleRestoreBtnClick() {
     try {
       const routesAndCurrent = await appStorage.loadAllRoutes()
-      dispatch(loadAllRoutes(routesAndCurrent.allRoutes, routesAndCurrent.currentRouteId))
+      dispatch(loadAllRoutes({ routes: routesAndCurrent.allRoutes, currentRouteId: routesAndCurrent.currentRouteId }))
     } catch (error) {
       console.warn('err:' + error)
     }

@@ -120,7 +120,7 @@ const ModalArea = () => {
    * ルート名変更
    */
   function handleRenameRouteOK() {
-    dispatch(renameRoute(selectedRouteId, currentRouteName))
+    dispatch(renameRoute({ routeId: selectedRouteId, newRouteName: currentRouteName }))
     dispatch(setRouteNameEntryDialogVisible(false))
   }
 }
