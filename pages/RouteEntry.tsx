@@ -1,13 +1,12 @@
 import * as React from 'react'
 import { View, Button, StyleSheet, FlatList } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
-import { Drive } from '../domains/Drive'
+import { Drive, DriveCondition } from '../domains/Drive'
 import DriveList from '../components/DriveList'
 import PointNameDialog, { PointNameDialogState } from '../components/PointNameDialog'
-import { addNewRecord, loadAllRoutes, addPointName } from '../reducers/RouteReducer'
 import { AppStateInterface } from '../store/store'
 import AppStorage from '../AppStorage'
-import { saveRoute } from '../thunk/RouteThunk'
+import { addNewRecord, saveAllRoutes, addPointName, loadAllRoutes } from '../thunk/RouteThunk'
 
 /**
  * ApplicationComponent
@@ -83,19 +82,14 @@ const ButtonArea = () => {
    * Storeボタン押下時の処理
    */
   function handleStoreBtnClick() {
-    dispatch(saveRoute());
+    dispatch(saveAllRoutes())
   }
 
   /**
    * Restoreボタン押下時の処理
    */
-  async function handleRestoreBtnClick() {
-    try {
-      const routesAndCurrent = await appStorage.loadAllRoutes()
-      dispatch(loadAllRoutes({ routes: routesAndCurrent.allRoutes, currentRouteId: routesAndCurrent.currentRouteId }))
-    } catch (error) {
-      console.warn('err:' + error)
-    }
+  function handleRestoreBtnClick() {
+    dispatch(loadAllRoutes())
   }
   /**
    * デバッグ用
@@ -112,15 +106,21 @@ const ButtonArea = () => {
  */
 const ModalArea = () => {
 
-  const isModalVisible = useSelector<AppStateInterface>(state => state.route.isModalVisible)
   const dispatch = useDispatch()
 
   return (
     <PointNameDialog
-      isModalVisible={isModalVisible}
+      isModalVisible={isModalVisible()}
       onDialogDismiss={handleDialogDismiss}
     />
   )
+
+  function isModalVisible(): boolean {
+    const currentRoute = useSelector<AppStateInterface>(state => state.route.currentRoute)
+    if (currentRoute.drives.length === 0) return false
+    const latestDrive = currentRoute.drives[currentRoute.drives.length - 1]
+    return latestDrive.mode === DriveCondition.WAIT_FOR_POINT_NAME
+  }
 
   /**
    * モーダル制御
@@ -130,6 +130,7 @@ const ModalArea = () => {
     if (value !== undefined) dispatch(addPointName(value.pointName))
   }
 }
+
 /**
  * Define view styles.
  */

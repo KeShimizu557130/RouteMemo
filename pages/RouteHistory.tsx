@@ -6,9 +6,8 @@ import Dialog from "react-native-dialog"
 import { Route } from '../domains/Route'
 import { AppStateInterface } from '../store/store'
 import RouteHistoryListMenu from '../components/RouteHistoryListMenu'
-import {
-  createRoute, renameRoute, loadRoute, setRouteHistoryPopupmenuVisible, setRouteNameEntryDialogVisible
-} from '../reducers/RouteReducer'
+import { setRouteHistoryPopupmenuVisible, setRouteNameEntryDialogVisible } from '../reducers/RouteReducer'
+import { createRoute, renameRoute, loadRoute } from '../thunk/RouteThunk'
 import { NavigationScreenProp } from 'react-navigation'
 
 interface RouteHistoryProps {
@@ -19,6 +18,7 @@ interface RouteHistoryProps {
  * ApplicationComponent
  */
 export default (props: RouteHistoryProps) => {
+
   return (
     <View style={styles.container}>
       <RouteHistoryArea navigation={props.navigation} />
@@ -32,8 +32,13 @@ export default (props: RouteHistoryProps) => {
 let selectedRouteId = -1
 
 /**
- * ルート表示領域
+ * ポップアップメニュー表示状態
  */
+let isPopupmenuVisible = false
+
+/**
+* ルート表示領域
+*/
 const RouteHistoryArea = (props: RouteHistoryProps) => {
 
   const allRoutes = useSelector<AppStateInterface>(state => state.route.allRoutes)
@@ -76,6 +81,7 @@ const RouteHistoryArea = (props: RouteHistoryProps) => {
    */
   function handleRouteLongTop(item: Route) {
     selectedRouteId = item.id
+    // setPopupmenuVisible(true)
     dispatch(setRouteHistoryPopupmenuVisible(true))
   }
 }
@@ -120,7 +126,7 @@ const ModalArea = () => {
    * ルート名変更
    */
   function handleRenameRouteOK() {
-    dispatch(renameRoute({ routeId: selectedRouteId, newRouteName: currentRouteName }))
+    dispatch(renameRoute(selectedRouteId, currentRouteName))
     dispatch(setRouteNameEntryDialogVisible(false))
   }
 }
@@ -148,9 +154,18 @@ const MenuArea = () => {
    * ルート名入力ダイアログ表示
    */
   function beginRenameRoute() {
+    // setPopupmenuVisible(false)
     dispatch(setRouteHistoryPopupmenuVisible(false))
     dispatch(setRouteNameEntryDialogVisible(true))
   }
+}
+
+/**
+ * ポップアップメニュー表示制御
+ * @param visible ダイアログ表示状態
+ */
+function setPopupmenuVisible(visible: boolean) {
+  isPopupmenuVisible = visible
 }
 
 const styles = StyleSheet.create({
