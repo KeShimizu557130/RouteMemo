@@ -5,7 +5,6 @@ import { Drive, DriveCondition } from '../domains/Drive'
 import DriveList from '../components/DriveList'
 import PointNameDialog, { PointNameDialogState } from '../components/PointNameDialog'
 import { AppStateInterface } from '../store/store'
-import AppStorage from '../AppStorage'
 import { addNewRecord, saveAllRoutes, addPointName, loadAllRoutes } from '../thunk/RouteThunk'
 
 /**
@@ -25,7 +24,6 @@ export default () => {
  * ルート表示領域
  */
 const RouteArea = () => {
-
   const currentRoute = useSelector<AppStateInterface>(state => state.route.currentRoute)
 
   return (
@@ -55,8 +53,6 @@ const RouteArea = () => {
  * ボタン表示領域
  */
 const ButtonArea = () => {
-
-  const appStorage = new AppStorage()
   const allRoutes = useSelector<AppStateInterface>(state => state.route.allRoutes)
   const currentRoute = useSelector<AppStateInterface>(state => state.route.currentRoute)
   const currentRouteId = useSelector<AppStateInterface>(state => state.route.currentRouteId)
@@ -105,7 +101,6 @@ const ButtonArea = () => {
  * モーダル表示領域
  */
 const ModalArea = () => {
-
   const dispatch = useDispatch()
 
   return (

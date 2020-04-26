@@ -1,4 +1,5 @@
-import { Drive } from './Drive';
+import { Drive } from './Drive'
+import { dateFormat } from '../util/dateFormat'
 
 /**
  * ルートクラス
@@ -26,4 +27,12 @@ export class RouteImpl implements Route {
     this.routeName = routeName
   }
 
+  static newRoute(): Route {
+    const now = new Date()
+    const newCurrentRoute = new RouteImpl(
+      now.getTime(),
+      dateFormat.format(now, 'yyyy/MM/dd hh:mm') + 'のルート'
+    )
+    return newCurrentRoute as Route
+  }
 }

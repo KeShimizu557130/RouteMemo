@@ -4,7 +4,6 @@ import { Drive, DriveImpl, DriveCondition } from '../domains/Drive'
 import AppStorage from '../AppStorage'
 import { setDrives, setAllRoute, setCurrentRoute } from '../reducers/RouteReducer'
 import { Route, RouteImpl } from '../domains/Route'
-import { dateFormat } from '../util/dateFormat'
 
 const appStorage = new AppStorage()
 
@@ -99,18 +98,6 @@ const getLatestDrive = (drives: Drive[]): Drive => {
   return drives[drives.length - 1];
 }
 
-/**
- * 新規ルート生成
- */
-const createNewRoute = (): Route => {
-  const now = new Date()
-  const newCurrentRoute = new RouteImpl(
-    now.getTime(),
-    dateFormat.format(now, 'yyyy/MM/dd hh:mm') + 'のルート'
-  )
-  return newCurrentRoute
-}
-
 export const createRoute = () => {
   return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
     const state = getState().route
@@ -123,26 +110,13 @@ export const createRoute = () => {
     if (!issaved) newRoutes.push(state.currentRoute)
 
     // currentRouteに新しいRouteを設定する
-    const newCurrentRoute = createNewRoute()
+    const newCurrentRoute = RouteImpl.newRoute()
     newRoutes.push(newCurrentRoute)
 
     dispatch(setAllRoute(newRoutes))
     dispatch(setCurrentRoute(newCurrentRoute))
   }
 }
-
-// export const setUpState = (): RouteReducerInterface => {
-//   const newCurrentRoute = createNewRoute()
-//   const newRoutes = []
-//   newRoutes.push(newCurrentRoute)
-//   return {
-//     allRoutes: newRoutes,
-//     currentRoute: newCurrentRoute,
-//     currentRouteId: newCurrentRoute.id,
-//     isRouteHistoryPopupMenuVisible: false,
-//     isRouteNameEntryDialogVisible: false
-//   }
-// }
 
 export const loadAllRoutes = () => {
   return async (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
@@ -155,7 +129,7 @@ export const loadAllRoutes = () => {
       let newCurrentRoute = newRoutes.find((value) => value.id === newCurrentRouteId)
       if (typeof newCurrentRoute === 'undefined') {
         // 現在のルートを新規生成
-        newCurrentRoute = createNewRoute()
+        newCurrentRoute = RouteImpl.newRoute()
         newCurrentRouteId = newCurrentRoute.id
         newRoutes.push(newCurrentRoute)
       }

@@ -6,7 +6,6 @@ import Dialog from "react-native-dialog"
 import { Route } from '../domains/Route'
 import { AppStateInterface } from '../store/store'
 import RouteHistoryListMenu from '../components/RouteHistoryListMenu'
-import { setRouteHistoryPopupmenuVisible, setRouteNameEntryDialogVisible } from '../reducers/RouteReducer'
 import { createRoute, renameRoute, loadRoute } from '../thunk/RouteThunk'
 import { NavigationScreenProp } from 'react-navigation'
 
@@ -14,17 +13,31 @@ interface RouteHistoryProps {
   navigation: NavigationScreenProp<any, any>,
 }
 
+const RouteHistoryContext = React.createContext()
+
+type RouteHistoryState = {
+  isPopupmenuVisible: boolean
+  isRoutenameDialogVisible: boolean
+}
+
 /**
  * ApplicationComponent
  */
 export default (props: RouteHistoryProps) => {
+  // ポップアップメニュー表示状態
+  const [state, setState] = React.useState<RouteHistoryState>({
+    isPopupmenuVisible: false,
+    isRoutenameDialogVisible: false
+  })
 
   return (
     <View style={styles.container}>
-      <RouteHistoryArea navigation={props.navigation} />
-      <ButtonArea />
-      <ModalArea />
-      <MenuArea />
+      <RouteHistoryContext.Provider value={[state, setState]}>
+        <RouteHistoryArea navigation={props.navigation} />
+        <ButtonArea />
+        <ModalArea />
+        <MenuArea />
+      </RouteHistoryContext.Provider>
     </View>
   )
 }
@@ -32,16 +45,11 @@ export default (props: RouteHistoryProps) => {
 let selectedRouteId = -1
 
 /**
- * ポップアップメニュー表示状態
- */
-let isPopupmenuVisible = false
-
-/**
 * ルート表示領域
 */
 const RouteHistoryArea = (props: RouteHistoryProps) => {
-
   const allRoutes = useSelector<AppStateInterface>(state => state.route.allRoutes)
+  const [state, setState] = React.useContext(RouteHistoryContext)
   const dispatch = useDispatch()
 
   return (
@@ -81,8 +89,7 @@ const RouteHistoryArea = (props: RouteHistoryProps) => {
    */
   function handleRouteLongTop(item: Route) {
     selectedRouteId = item.id
-    // setPopupmenuVisible(true)
-    dispatch(setRouteHistoryPopupmenuVisible(true))
+    setState({ isPopupmenuVisible: true })
   }
 }
 
@@ -109,15 +116,14 @@ const ButtonArea = () => {
  */
 const ModalArea = () => {
   let currentRouteName = ''
-
-  const isRouteNameEntryDialogVisible = useSelector<AppStateInterface>(state => state.route.isRouteNameEntryDialogVisible)
+  const [state, setState] = React.useContext(RouteHistoryContext)
   const dispatch = useDispatch()
 
   return (
-    <Dialog.Container visible={isRouteNameEntryDialogVisible}>
+    <Dialog.Container visible={state.isRoutenameDialogVisible}>
       <Dialog.Title>ルート名変更</Dialog.Title>
       <Dialog.Input label="変更後のルート名称を入力してください。" onChangeText={(routeName) => { currentRouteName = routeName }} />
-      <Dialog.Button label="Cancel" onPress={() => { dispatch(setRouteNameEntryDialogVisible(false)) }} />
+      <Dialog.Button label="Cancel" onPress={() => { setState({ isRoutenameDialogVisible: false }) }} />
       <Dialog.Button label="OK" onPress={handleRenameRouteOK} />
     </Dialog.Container>
   )
@@ -127,7 +133,7 @@ const ModalArea = () => {
    */
   function handleRenameRouteOK() {
     dispatch(renameRoute(selectedRouteId, currentRouteName))
-    dispatch(setRouteNameEntryDialogVisible(false))
+    setState({ isRoutenameDialogVisible: false })
   }
 }
 
@@ -135,8 +141,7 @@ const ModalArea = () => {
  * メニュー表示領域
  */
 const MenuArea = () => {
-  const isRouteHistoryPopupMenuVisible = useSelector<AppStateInterface>(state => state.route.isRouteHistoryPopupMenuVisible)
-  const dispatch = useDispatch()
+  const [state, setState] = React.useContext(RouteHistoryContext)
 
   return (
     <RouteHistoryListMenu
@@ -146,7 +151,7 @@ const MenuArea = () => {
           onMenuPress: () => { beginRenameRoute() }
         }
       ]}
-      isModalVisible={isRouteHistoryPopupMenuVisible}
+      isModalVisible={state.isPopupmenuVisible}
     />
   )
 
@@ -154,18 +159,9 @@ const MenuArea = () => {
    * ルート名入力ダイアログ表示
    */
   function beginRenameRoute() {
-    // setPopupmenuVisible(false)
-    dispatch(setRouteHistoryPopupmenuVisible(false))
-    dispatch(setRouteNameEntryDialogVisible(true))
+    setState({ isPopupmenuVisible: false })
+    setState({ isRoutenameDialogVisible: true })
   }
-}
-
-/**
- * ポップアップメニュー表示制御
- * @param visible ダイアログ表示状態
- */
-function setPopupmenuVisible(visible: boolean) {
-  isPopupmenuVisible = visible
 }
 
 const styles = StyleSheet.create({
