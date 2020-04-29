@@ -11,9 +11,8 @@ import { NavigationScreenProp } from 'react-navigation'
 
 interface RouteHistoryProps {
   navigation: NavigationScreenProp<any, any>,
+  setState: any
 }
-
-const RouteHistoryContext = React.createContext()
 
 type RouteHistoryState = {
   isPopupmenuVisible: boolean
@@ -32,12 +31,10 @@ export default (props: RouteHistoryProps) => {
 
   return (
     <View style={styles.container}>
-      <RouteHistoryContext.Provider value={[state, setState]}>
-        <RouteHistoryArea navigation={props.navigation} />
-        <ButtonArea />
-        <ModalArea />
-        <MenuArea />
-      </RouteHistoryContext.Provider>
+      <RouteHistoryArea navigation={props.navigation} setState={setState} />
+      <ButtonArea />
+      <ModalArea state={state} setState={setState} />
+      <MenuArea state={state} setState={setState} />
     </View>
   )
 }
@@ -49,7 +46,6 @@ let selectedRouteId = -1
 */
 const RouteHistoryArea = (props: RouteHistoryProps) => {
   const allRoutes = useSelector<AppStateInterface>(state => state.route.allRoutes)
-  const [state, setState] = React.useContext(RouteHistoryContext)
   const dispatch = useDispatch()
 
   return (
@@ -89,7 +85,7 @@ const RouteHistoryArea = (props: RouteHistoryProps) => {
    */
   function handleRouteLongTop(item: Route) {
     selectedRouteId = item.id
-    setState({ isPopupmenuVisible: true })
+    props.setState({ isPopupmenuVisible: true })
   }
 }
 
@@ -114,9 +110,8 @@ const ButtonArea = () => {
 /**
  * モーダル表示領域
  */
-const ModalArea = () => {
+const ModalArea = ({ state, setState }) => {
   let currentRouteName = ''
-  const [state, setState] = React.useContext(RouteHistoryContext)
   const dispatch = useDispatch()
 
   return (
@@ -140,8 +135,7 @@ const ModalArea = () => {
 /**
  * メニュー表示領域
  */
-const MenuArea = () => {
-  const [state, setState] = React.useContext(RouteHistoryContext)
+const MenuArea = ({ state, setState }) => {
 
   return (
     <RouteHistoryListMenu
