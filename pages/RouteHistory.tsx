@@ -1,4 +1,5 @@
-import * as React from 'react'
+// import * as React from 'react'
+import React, { useState } from 'react'
 import { View, Text, Button, StyleSheet, FlatList } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
 import { ListItem } from 'react-native-elements'
@@ -22,8 +23,10 @@ let selectedRouteId = -1
  */
 export default (props: RouteHistoryProps) => {
   // ポップアップメニュー表示状態
-  const [isPopupmenuVisible, setPopupmenuVisible] = React.useState<boolean>(false)
-  const [isRoutenameDialogVisible, setRoutenameDialogVisible] = React.useState<boolean>(false)
+  // const [isPopupmenuVisible, setPopupmenuVisible] = React.useState<boolean>(false)
+  // const [isRoutenameDialogVisible, setRoutenameDialogVisible] = React.useState<boolean>(false)
+  const [isPopupmenuVisible, setPopupmenuVisible] = useState(false)
+  const [isRoutenameDialogVisible, setRoutenameDialogVisible] = useState(false)
   const dispatch = useDispatch()
 
   return (
