@@ -1,6 +1,8 @@
 import * as React from 'react'
 import { Text, View, TextInput, Button, StyleSheet } from 'react-native'
+import { useDispatch } from 'react-redux'
 import Modal from "react-native-modal"
+import { addPointName } from '../thunk/RouteThunk'
 
 /**
  * プロパティ定義
@@ -10,69 +12,37 @@ export interface PointNameDialogProps {
   isModalVisible: boolean
 }
 
-/**
- * State定義
- */
-export interface PointNameDialogState {
-  pointName: string
-  pointMemo: string
-}
+export default (props: PointNameDialogProps) => {
+  const [pointName, setPointName] = React.useState<string>('')
+  const [pointMemo, setPointMemo] = React.useState<string>('')
+  const dispatch = useDispatch()
 
-/**
- * 地点入力画面表示用のダイアログコンポーネント
- */
-export default class PointNameDialog extends React.Component<PointNameDialogProps, PointNameDialogState> {
-
-  /**
-   * コンストラクタ
-   * @param props 
-   */
-  constructor(props: PointNameDialogProps) {
-    super(props)
-    this.state = {
-      pointName: "",
-      pointMemo: ""
-    }
-  }
-
-  render() {
-    return (
-      <Modal isVisible={this.props.isModalVisible}>
-        <View style={styles.container}>
-          <View>
-            <Text>地点名</Text>
-            <TextInput style={styles.pointNameInput}
-              onChangeText={(text) => { this.handleOnChangePointNameInput(text) }} />
-          </View>
-          <View>
-            <Text>メモ</Text>
-            <TextInput style={styles.pointMemoInput}
-              multiline
-              onChangeText={(text) => { this.handleOnChangePointMemoInput(text) }} />
-          </View>
-          <View style={styles.pointNameDialogButtons}>
-            <Button title="OK"
-              onPress={() => this.props.onDialogDismiss(this.state)} />
-            <Button title="Cancel"
-              onPress={() => this.props.onDialogDismiss()} />
-          </View>
+  return (
+    <Modal isVisible={props.isModalVisible}>
+      <View style={styles.container}>
+        <View>
+          <Text>地点名</Text>
+          <TextInput style={styles.pointNameInput}
+            onChangeText={(text) => setPointName(text)} />
         </View>
-      </Modal>
-    )
-  }
+        <View>
+          <Text>メモ</Text>
+          <TextInput style={styles.pointMemoInput}
+            multiline
+            onChangeText={(text) => setPointMemo(text)} />
+        </View>
+        <View style={styles.pointNameDialogButtons}>
+          <Button title="OK"
+            onPress={handleOK} />
+          <Button title="Cancel"
+            onPress={() => { }} />
+        </View>
+      </View>
+    </Modal>
+  )
 
-  /**
-   * 地点名の入力イベントハンドリング
-   */
-  handleOnChangePointNameInput = (text) => {
-    this.setState({ pointName: text });
-  }
-
-  /**
-   * 地点メモの入力イベントハンドリング
-   */
-  handleOnChangePointMemoInput = (text) => {
-    this.setState({ pointMemo: text });
+  function handleOK() {
+    if (pointName !== undefined) dispatch(addPointName(pointName))
   }
 }
 

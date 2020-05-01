@@ -3,9 +3,9 @@ import { View, Button, StyleSheet, FlatList } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
 import { Drive, DriveCondition } from '../domains/Drive'
 import DriveList from '../components/DriveList'
-import PointNameDialog, { PointNameDialogState } from '../components/PointNameDialog'
+import PointNameDialog from '../components/PointNameDialog'
 import { AppStateInterface } from '../store/store'
-import { addNewRecord, saveAllRoutes, addPointName, loadAllRoutes } from '../thunk/RouteThunk'
+import { addNewRecord, saveAllRoutes, loadAllRoutes } from '../thunk/RouteThunk'
 
 /**
  * ApplicationComponent
@@ -102,7 +102,7 @@ const ModalArea = () => {
   return (
     <PointNameDialog
       isModalVisible={isModalVisible()}
-      onDialogDismiss={handleDialogDismiss}
+      onDialogDismiss={() => { }}
     />
   )
 
@@ -111,14 +111,6 @@ const ModalArea = () => {
     if (currentRoute.drives.length === 0) return false
     const latestDrive = currentRoute.drives[currentRoute.drives.length - 1]
     return latestDrive.mode === DriveCondition.WAIT_FOR_POINT_NAME
-  }
-
-  /**
-   * モーダル制御
-   * @param value 
-   */
-  function handleDialogDismiss(value: PointNameDialogState) {
-    if (value !== undefined) dispatch(addPointName(value.pointName))
   }
 }
 

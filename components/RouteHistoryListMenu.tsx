@@ -17,79 +17,19 @@ export interface RouteHistoryListMenuProps {
   onMenuHide: () => void
 }
 
-/**
- * State定義
- */
-export interface RouteHistoryListMenuState {
-  menuItems: ListMenuItem[]
-}
+export default (props: RouteHistoryListMenuProps) => {
+  return (
+    <Modal isVisible={props.isModalVisible} onModalHide={props.onMenuHide}>
+      <FlatList
+        data={props.menuItems}
+        renderItem={value => renderList(value.item)}
+        keyExtractor={(value, index) => index.toString()} />
+    </Modal>
+  )
 
-
-/**
- * ルート履歴画面でロングタップした時に表示されるポップアップメニュー
- */
-export default class RouteHistoryListMenu extends React.Component<RouteHistoryListMenuProps, RouteHistoryListMenuState> {
-
-  /**
-   * コンストラクタ
-   * @param props 
-   */
-  constructor(props: RouteHistoryListMenuProps) {
-    super(props)
-    this.state = {
-      menuItems: props.menuItems
-    }
-  }
-
-  render() {
-    return (
-      <Modal isVisible={this.props.isModalVisible} onModalHide={this.props.onMenuHide}>
-        <FlatList
-          data={this.props.menuItems}
-          renderItem={value => this.renderList(value.item)}
-          keyExtractor={(value, index) => index.toString()} />
-      </Modal>
-    )
-  }
-
-  renderList = (item: ListMenuItem) => {
+  function renderList(item: ListMenuItem) {
     return (
       <ListItem title={item.menuTitle} onPress={() => { item.onMenuPress() }} />
     )
   }
 }
-
-
-// /**
-//  * ルート履歴画面でロングタップした時に表示されるポップアップメニュー
-//  */
-// export default class RouteHistoryListMenu extends React.Component<RouteHistoryListMenuProps, RouteHistoryListMenuState> {
-
-//   /**
-//    * コンストラクタ
-//    * @param props 
-//    */
-//   constructor(props: RouteHistoryListMenuProps) {
-//     super(props)
-//     this.state = {
-//       menuItems: props.menuItems
-//     }
-//   }
-
-//   render() {
-//     return (
-//       <Modal isVisible={this.props.isModalVisible}>
-//         <FlatList
-//           data={this.props.menuItems}
-//           renderItem={value => this.renderList(value.item)}
-//           keyExtractor={(value, index) => index.toString()} />
-//       </Modal>
-//     )
-//   }
-
-//   renderList = (item: ListMenuItem) => {
-//     return (
-//       <ListItem title={item.menuTitle} onPress={() => { item.onMenuPress() }} />
-//     )
-//   }
-// }

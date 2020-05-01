@@ -15,8 +15,6 @@ interface RouteHistoryProps {
   onRouteTap: (item: Route) => void
 }
 
-let selectedRouteId = -1
-
 /**
  * ApplicationComponent
  */
@@ -24,6 +22,7 @@ export default (props: RouteHistoryProps) => {
   // ポップアップメニュー表示状態
   const [isPopupmenuVisible, setPopupmenuVisible] = React.useState<boolean>(false)
   const [isRoutenameDialogVisible, setRoutenameDialogVisible] = React.useState<boolean>(false)
+  const [selectedRouteId, setSelectedRouteId] = React.useState<number>(-1)
   const dispatch = useDispatch()
 
   return (
@@ -36,20 +35,13 @@ export default (props: RouteHistoryProps) => {
       <ModalArea
         isRoutenameDialogVisible={isRoutenameDialogVisible}
         onRenameOK={handleRouteRenameExec}
-        onRenameCancel={handleRouteRenameCancel} />
+        onRenameCancel={() => setRoutenameDialogVisible(false)} />
       <MenuArea
         isPopupmenuVisible={isPopupmenuVisible}
-        onRenameBegin={handleRouteRenameBegin}
-        onMenuHide={handlePopupMenuHide} />
+        onRenameBegin={() => setPopupmenuVisible(false)}
+        onMenuHide={() => setRoutenameDialogVisible(true)} />
     </View>
   )
-
-  /**
-   * ポップアップメニュー非表示時の処理
-   */
-  function handlePopupMenuHide() {
-    setRoutenameDialogVisible(true)
-  }
 
   /**
    * ルート名タップ時の処理
@@ -63,17 +55,8 @@ export default (props: RouteHistoryProps) => {
    * ルート名ロングタップ時の処理
    */
   function handleRouteLongTop(item: Route) {
-    selectedRouteId = item.id
+    setSelectedRouteId(item.id)
     setPopupmenuVisible(true)
-  }
-
-  /**
-   * ルート名変更開始
-   * ルート名入力ダイアログ表示
-   */
-  function handleRouteRenameBegin() {
-    setPopupmenuVisible(false)
-    // setRoutenameDialogVisible(true)
   }
 
   /**
@@ -81,13 +64,6 @@ export default (props: RouteHistoryProps) => {
    */
   function handleRouteRenameExec(newRouteName: string) {
     dispatch(renameRoute(selectedRouteId, newRouteName))
-    setRoutenameDialogVisible(false)
-  }
-
-  /**
-   * ルート名変更キャンセル
-   */
-  function handleRouteRenameCancel() {
     setRoutenameDialogVisible(false)
   }
 }
