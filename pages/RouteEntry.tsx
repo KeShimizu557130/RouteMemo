@@ -97,13 +97,8 @@ const ButtonArea = () => {
  * モーダル表示領域
  */
 const ModalArea = () => {
-  const dispatch = useDispatch()
-
   return (
-    <PointNameDialog
-      isModalVisible={isModalVisible()}
-      onDialogDismiss={() => { }}
-    />
+    <PointNameDialog isModalVisible={isModalVisible()} />
   )
 
   function isModalVisible(): boolean {

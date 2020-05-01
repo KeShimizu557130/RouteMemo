@@ -8,7 +8,6 @@ import { addPointName } from '../thunk/RouteThunk'
  * プロパティ定義
  */
 export interface PointNameDialogProps {
-  onDialogDismiss: (PointNameDialogState?) => void
   isModalVisible: boolean
 }
 
