@@ -14,6 +14,7 @@ export interface ListMenuItem {
 export interface RouteHistoryListMenuProps {
   menuItems: ListMenuItem[]
   isModalVisible: boolean
+  onMenuHide: () => void
 }
 
 /**
@@ -22,6 +23,7 @@ export interface RouteHistoryListMenuProps {
 export interface RouteHistoryListMenuState {
   menuItems: ListMenuItem[]
 }
+
 
 /**
  * ルート履歴画面でロングタップした時に表示されるポップアップメニュー
@@ -41,7 +43,7 @@ export default class RouteHistoryListMenu extends React.Component<RouteHistoryLi
 
   render() {
     return (
-      <Modal isVisible={this.props.isModalVisible}>
+      <Modal isVisible={this.props.isModalVisible} onModalHide={this.props.onMenuHide}>
         <FlatList
           data={this.props.menuItems}
           renderItem={value => this.renderList(value.item)}
@@ -56,3 +58,38 @@ export default class RouteHistoryListMenu extends React.Component<RouteHistoryLi
     )
   }
 }
+
+
+// /**
+//  * ルート履歴画面でロングタップした時に表示されるポップアップメニュー
+//  */
+// export default class RouteHistoryListMenu extends React.Component<RouteHistoryListMenuProps, RouteHistoryListMenuState> {
+
+//   /**
+//    * コンストラクタ
+//    * @param props 
+//    */
+//   constructor(props: RouteHistoryListMenuProps) {
+//     super(props)
+//     this.state = {
+//       menuItems: props.menuItems
+//     }
+//   }
+
+//   render() {
+//     return (
+//       <Modal isVisible={this.props.isModalVisible}>
+//         <FlatList
+//           data={this.props.menuItems}
+//           renderItem={value => this.renderList(value.item)}
+//           keyExtractor={(value, index) => index.toString()} />
+//       </Modal>
+//     )
+//   }
+
+//   renderList = (item: ListMenuItem) => {
+//     return (
+//       <ListItem title={item.menuTitle} onPress={() => { item.onMenuPress() }} />
+//     )
+//   }
+// }

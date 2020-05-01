@@ -39,9 +39,17 @@ export default (props: RouteHistoryProps) => {
         onRenameCancel={handleRouteRenameCancel} />
       <MenuArea
         isPopupmenuVisible={isPopupmenuVisible}
-        onRenameBegin={handleRouteRenameBegin} />
+        onRenameBegin={handleRouteRenameBegin}
+        onMenuHide={handlePopupMenuHide} />
     </View>
   )
+
+  /**
+   * ポップアップメニュー非表示時の処理
+   */
+  function handlePopupMenuHide() {
+    setRoutenameDialogVisible(true)
+  }
 
   /**
    * ルート名タップ時の処理
@@ -65,7 +73,7 @@ export default (props: RouteHistoryProps) => {
    */
   function handleRouteRenameBegin() {
     setPopupmenuVisible(false)
-    setRoutenameDialogVisible(true)
+    // setRoutenameDialogVisible(true)
   }
 
   /**
@@ -142,13 +150,14 @@ const ModalArea = ({ isRoutenameDialogVisible, onRenameOK, onRenameCancel }) => 
 /**
  * メニュー表示領域
  */
-const MenuArea = ({ isPopupmenuVisible, onRenameBegin }) => {
+const MenuArea = ({ isPopupmenuVisible, onRenameBegin, onMenuHide }) => {
   return (
     <RouteHistoryListMenu
       menuItems={[
         { menuTitle: 'rename', onMenuPress: () => onRenameBegin() }
       ]}
       isModalVisible={isPopupmenuVisible}
+      onMenuHide={onMenuHide}
     />
   )
 }
