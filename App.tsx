@@ -3,15 +3,17 @@ import { Provider } from 'react-redux'
 import store from './store/store'
 import { createStackNavigator } from 'react-navigation-stack'
 import { createAppContainer } from 'react-navigation'
-import RouteEntry from './pages/RouteEntry'
 import RootScreen from './pages/RootScreen'
+import RouteEntry from './pages/RouteEntry'
 import RouteHistory from './pages/RouteHistory'
+import DriveEdit from './pages/DriveEdit'
 
 const RootStack = createStackNavigator(
   {
-    Root: RootScreen,
-    Entry: RouteEntry,
-    History: RouteHistory
+    Root: { screen: RootScreen },
+    Entry: { screen: RouteEntry },
+    History: { screen: RouteHistory },
+    Edit: { screen: DriveEdit }
   },
   {
     initialRouteName: 'Root'

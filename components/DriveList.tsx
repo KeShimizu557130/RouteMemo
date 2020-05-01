@@ -1,11 +1,12 @@
-import * as React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
+import * as React from 'react'
+import { Text, View, TouchableOpacity, Alert, StyleSheet } from 'react-native'
+import { NavigationScreenProp } from 'react-navigation'
+import { Drive } from '../domains/Drive'
 import { dateFormat } from '../util/dateFormat'
 
 export interface DeviceListProps {
-  pointName: string;
-  arrivalTime: number;
-  departureTime: number;
+  drive: Drive,
+  navigation: NavigationScreenProp<any, any>
 }
 
 export default class DriveList extends React.Component<DeviceListProps, {}> {
@@ -24,12 +25,14 @@ export default class DriveList extends React.Component<DeviceListProps, {}> {
             <View style={styles.verticalLine}>
               <View style={styles.circle} />
             </View>
-            <Text>{this.props.pointName != undefined && this.props.pointName}</Text>
+            <TouchableOpacity onPress={this.onPress}>
+              <Text>{this.props.drive.pointName != undefined && this.props.drive.pointName}</Text>
+            </TouchableOpacity>
           </View>
 
           <View style={styles.right}>
-            <Text style={styles.time}>{this.dateToString(this.props.arrivalTime)}着</Text>
-            <Text style={styles.time}>{this.dateToString(this.props.departureTime)}発</Text>
+            <Text style={styles.time}>{this.dateToString(this.props.drive.arrivalTime)}着</Text>
+            <Text style={styles.time}>{this.dateToString(this.props.drive.departureTime)}発</Text>
           </View>
         </View>
 
@@ -39,6 +42,10 @@ export default class DriveList extends React.Component<DeviceListProps, {}> {
         </View>
       </View>
     );
+  }
+
+  onPress = () => {
+    this.props.navigation.navigate('Edit', { drive: this.props.drive })
   }
 
   dateToString = (date: number) => {

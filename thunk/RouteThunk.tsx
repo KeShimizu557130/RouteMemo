@@ -189,3 +189,14 @@ export const loadRoute = (route: Route) => {
     }
   }
 }
+
+export const updateDrive = (newDrive: Drive) => {
+  return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
+    const state = getState().route
+    const newDrives = state.currentRoute.drives.map((drive) => {
+      if (drive.id === newDrive.id) return newDrive
+      return drive
+    })
+    dispatch(setDrives(newDrives))
+  }
+}

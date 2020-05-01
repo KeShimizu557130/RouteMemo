@@ -10,10 +10,10 @@ import { addNewRecord, saveAllRoutes, addPointName, loadAllRoutes } from '../thu
 /**
  * ApplicationComponent
  */
-export default () => {
+export default (props) => {
   return (
     <View style={styles.container}>
-      <RouteArea />
+      <RouteArea navigation={props.navigation} />
       <ButtonArea />
       <ModalArea />
     </View>
@@ -23,7 +23,7 @@ export default () => {
 /**
  * ルート表示領域
  */
-const RouteArea = () => {
+const RouteArea = (props) => {
   const currentRoute = useSelector<AppStateInterface>(state => state.route.currentRoute)
 
   return (
@@ -40,11 +40,7 @@ const RouteArea = () => {
    */
   function renderList(item: Drive) {
     return (
-      <DriveList
-        pointName={item.pointName!}
-        arrivalTime={item.arrivalTime!}
-        departureTime={item.departureTime!}
-      />
+      <DriveList navigation={props.navigation} drive={item} />
     )
   }
 }

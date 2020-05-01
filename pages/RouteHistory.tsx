@@ -1,12 +1,11 @@
-// import * as React from 'react'
-import React, { useState } from 'react'
+import * as React from 'react'
 import { View, Text, Button, StyleSheet, FlatList } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
 import { ListItem } from 'react-native-elements'
-import Dialog from "react-native-dialog"
 import { Route } from '../domains/Route'
 import { AppStateInterface } from '../store/store'
 import RouteHistoryListMenu from '../components/RouteHistoryListMenu'
+import RouteNameDialog from '../components/RouteNameDialog'
 import { createRoute, renameRoute, loadRoute } from '../thunk/RouteThunk'
 import { NavigationScreenProp } from 'react-navigation'
 
@@ -23,18 +22,24 @@ let selectedRouteId = -1
  */
 export default (props: RouteHistoryProps) => {
   // ポップアップメニュー表示状態
-  // const [isPopupmenuVisible, setPopupmenuVisible] = React.useState<boolean>(false)
-  // const [isRoutenameDialogVisible, setRoutenameDialogVisible] = React.useState<boolean>(false)
-  const [isPopupmenuVisible, setPopupmenuVisible] = useState(false)
-  const [isRoutenameDialogVisible, setRoutenameDialogVisible] = useState(false)
+  const [isPopupmenuVisible, setPopupmenuVisible] = React.useState<boolean>(false)
+  const [isRoutenameDialogVisible, setRoutenameDialogVisible] = React.useState<boolean>(false)
   const dispatch = useDispatch()
 
   return (
     <View style={styles.container}>
-      <RouteHistoryArea navigation={props.navigation} onRouteTap={handleRouteTap} onRouteLongTap={handleRouteLongTop} />
+      <RouteHistoryArea
+        navigation={props.navigation}
+        onRouteTap={handleRouteTap}
+        onRouteLongTap={handleRouteLongTop} />
       <ButtonArea />
-      <ModalArea isRoutenameDialogVisible={isRoutenameDialogVisible} onRenameOK={handleRouteRenameExec} onRenameCancel={handleRouteRenameCancel} />
-      <MenuArea isPopupmenuVisible={isPopupmenuVisible} onRenameBegin={handleRouteRenameBegin} />
+      <ModalArea
+        isRoutenameDialogVisible={isRoutenameDialogVisible}
+        onRenameOK={handleRouteRenameExec}
+        onRenameCancel={handleRouteRenameCancel} />
+      <MenuArea
+        isPopupmenuVisible={isPopupmenuVisible}
+        onRenameBegin={handleRouteRenameBegin} />
     </View>
   )
 
@@ -43,7 +48,7 @@ export default (props: RouteHistoryProps) => {
    */
   function handleRouteTap(item: Route) {
     dispatch(loadRoute(item))
-    props.navigation.navigate('Entry', item)
+    props.navigation.navigate('Entry')
   }
 
   /**
@@ -125,15 +130,12 @@ const ButtonArea = () => {
  * モーダル表示領域
  */
 const ModalArea = ({ isRoutenameDialogVisible, onRenameOK, onRenameCancel }) => {
-  let currentRouteName = ''
-
   return (
-    <Dialog.Container visible={isRoutenameDialogVisible}>
-      <Dialog.Title>ルート名変更</Dialog.Title>
-      <Dialog.Input label="変更後のルート名称を入力してください。" onChangeText={(routeName) => { currentRouteName = routeName }} />
-      <Dialog.Button label="Cancel" onPress={() => onRenameCancel()} />
-      <Dialog.Button label="OK" onPress={() => onRenameOK(currentRouteName)} />
-    </Dialog.Container>
+    <RouteNameDialog
+      isModalVisible={isRoutenameDialogVisible}
+      onDialogOK={onRenameOK}
+      onDialogCancel={onRenameCancel}
+    />
   )
 }
 
