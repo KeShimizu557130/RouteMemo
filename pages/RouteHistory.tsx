@@ -10,9 +10,7 @@ import { createRoute, renameRoute, loadRoute } from '../thunk/RouteThunk'
 import { NavigationScreenProp } from 'react-navigation'
 
 interface RouteHistoryProps {
-  navigation: NavigationScreenProp<any, any>,
-  onRouteLongTap: (item: Route) => void,
-  onRouteTap: (item: Route) => void
+  navigation: NavigationScreenProp<any, any>
 }
 
 /**
@@ -28,7 +26,6 @@ export default (props: RouteHistoryProps) => {
   return (
     <View style={styles.container}>
       <RouteHistoryArea
-        navigation={props.navigation}
         onRouteTap={handleRouteTap}
         onRouteLongTap={handleRouteLongTop} />
       <ButtonArea />
@@ -71,7 +68,7 @@ export default (props: RouteHistoryProps) => {
 /**
 * ルート表示領域
 */
-const RouteHistoryArea = (props: RouteHistoryProps) => {
+const RouteHistoryArea: React.FC<{ onRouteTap: (Route) => void, onRouteLongTap: (Route) => void }> = ({ onRouteTap, onRouteLongTap }) => {
   const allRoutes = useSelector<AppStateInterface>(state => state.route.allRoutes)
 
   return (
@@ -93,8 +90,8 @@ const RouteHistoryArea = (props: RouteHistoryProps) => {
     return (
       <ListItem
         title={item.routeName}
-        onPress={() => props.onRouteTap(item)}
-        onLongPress={() => props.onRouteLongTap(item)} />
+        onPress={() => onRouteTap(item)}
+        onLongPress={() => onRouteLongTap(item)} />
     )
   }
 }
@@ -113,7 +110,7 @@ const ButtonArea = () => {
 /**
  * モーダル表示領域
  */
-const ModalArea = ({ isRoutenameDialogVisible, onRenameOK, onRenameCancel }) => {
+const ModalArea: React.FC<{ isRoutenameDialogVisible: boolean, onRenameOK: (newRouteName: string) => void, onRenameCancel: () => void }> = ({ isRoutenameDialogVisible, onRenameOK, onRenameCancel }) => {
   return (
     <RouteNameDialog
       isModalVisible={isRoutenameDialogVisible}
@@ -126,7 +123,7 @@ const ModalArea = ({ isRoutenameDialogVisible, onRenameOK, onRenameCancel }) => 
 /**
  * メニュー表示領域
  */
-const MenuArea = ({ isPopupmenuVisible, onRenameBegin, onMenuHide }) => {
+const MenuArea: React.FC<{ isPopupmenuVisible: boolean, onRenameBegin: () => void, onMenuHide: () => void }> = ({ isPopupmenuVisible, onRenameBegin, onMenuHide }) => {
   return (
     <RouteHistoryListMenu
       menuItems={[

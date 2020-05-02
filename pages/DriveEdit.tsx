@@ -3,6 +3,7 @@ import { View, Text, TextInput, Button, StyleSheet } from 'react-native'
 import { useDispatch } from 'react-redux'
 import { Drive } from '../domains/Drive'
 import { updateDrive } from '../thunk/RouteThunk'
+import { NavigationScreenProp } from 'react-navigation'
 
 /**
  * ApplicationComponent
@@ -34,7 +35,7 @@ export default ({ route, navigation }) => {
 /**
  * ルート表示領域
  */
-const EditArea = ({ onPointNameChange, pointName }) => {
+const EditArea: React.FC<{ onPointNameChange: (string) => void, pointName: string }> = ({ onPointNameChange, pointName }) => {
   return (
     <View>
       <Text>地点名</Text>
@@ -46,7 +47,7 @@ const EditArea = ({ onPointNameChange, pointName }) => {
 /**
  * ボタン表示領域
  */
-const ButtonArea = ({ navigation, originDrive, editDrive }) => {
+const ButtonArea: React.FC<{ navigation: NavigationScreenProp<any, any>, originDrive: Drive, editDrive: Drive }> = ({ navigation, originDrive, editDrive }) => {
   const dispatch = useDispatch()
 
   return (
