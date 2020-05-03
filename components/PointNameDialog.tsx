@@ -32,7 +32,7 @@ export default (props: PointNameDialogProps) => {
         </View>
         <View style={styles.pointNameDialogButtons}>
           <Button title="OK"
-            onPress={() => dispatch(addPointName(pointName))} />
+            onPress={() => dispatch(addPointName(pointName, pointMemo))} />
           <Button title="Cancel"
             onPress={() => dispatch(addPointNameCancel())} />
         </View>

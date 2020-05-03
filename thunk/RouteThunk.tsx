@@ -29,13 +29,14 @@ export const addNewRecord = () => {
   }
 }
 
-export const addPointName = (pointName: string) => {
+export const addPointName = (pointName: string, pointMemo: string) => {
   return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
     const state = getState().route
     const newDrives = state.currentRoute.drives.map((drive, index) => {
       if (index !== state.currentRoute.drives.length - 1) return drive
       const newDrive = { ...drive }
       newDrive.pointName = pointName
+      newDrive.pointMemo = pointMemo
       newDrive.mode = DriveCondition.WAIT_FOR_ARRIVAL
       return newDrive
     })

@@ -5,19 +5,21 @@ export enum DriveCondition {
 }
 
 export interface Drive {
-  id: number;
-  pointName?: string;
-  arrivalTime?: number;
-  departureTime?: number;
-  mode: DriveCondition;
+  id: number
+  pointName?: string
+  arrivalTime?: number
+  departureTime?: number
+  mode: DriveCondition
+  pointMemo?: string
 }
 
 export class DriveImpl implements Drive {
-  id: number;
-  pointName?: string;
-  arrivalTime?: number;
-  departureTime?: number;
-  mode: DriveCondition;
+  id: number
+  pointName?: string
+  arrivalTime?: number
+  departureTime?: number
+  mode: DriveCondition
+  pointMemo: string
 
   /**
    * コンストラクタ
@@ -29,10 +31,11 @@ export class DriveImpl implements Drive {
     departureTime?: number,
     mode?: DriveCondition
   ) {
-    this.id = id;
-    this.pointName = pointName;
-    this.arrivalTime = arrivalTime;
-    this.departureTime = departureTime;
-    this.mode = mode;
+    this.id = id
+    this.pointName = pointName
+    this.arrivalTime = arrivalTime
+    this.departureTime = departureTime
+    this.mode = mode
+    this.pointMemo = ''
   }
 }
