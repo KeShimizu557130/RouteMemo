@@ -1,6 +1,7 @@
 export enum DriveCondition {
   WAIT_FOR_ARRIVAL,
-  WAIT_FOR_POINT_NAME
+  WAIT_FOR_POINT_NAME,
+  WAIT_FOR_POINT_NAME_CANCELED
 }
 
 export interface Drive {

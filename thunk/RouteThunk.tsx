@@ -34,9 +34,27 @@ export const addPointName = (pointName: string) => {
     const state = getState().route
     const newDrives = state.currentRoute.drives.map((drive, index) => {
       if (index !== state.currentRoute.drives.length - 1) return drive
-      drive.pointName = pointName
-      drive.mode = DriveCondition.WAIT_FOR_ARRIVAL
-      return drive
+      const newDrive = { ...drive }
+      newDrive.pointName = pointName
+      newDrive.mode = DriveCondition.WAIT_FOR_ARRIVAL
+      return newDrive
+    })
+    dispatch(setDrives(newDrives))
+  }
+}
+
+/**
+ * 地点名入力ダイアログでキャンセル押下された場合
+ */
+export const addPointNameCancel = () => {
+  return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
+    const state = getState().route
+
+    const newDrives = state.currentRoute.drives.map((drive, index) => {
+      if (index !== state.currentRoute.drives.length - 1) return drive
+      const newDrive = { ...drive }
+      newDrive.mode = DriveCondition.WAIT_FOR_POINT_NAME_CANCELED
+      return newDrive
     })
     dispatch(setDrives(newDrives))
   }
@@ -60,8 +78,8 @@ const addNewRecordImpl = (drives: Drive[]): Drive[] => {
     )
   } else {
     newDrives = drives.map((drive, index) => {
-      if (index !== drives.length - 1) return drive;
-      return moveNextInput(drive);
+      if (index !== drives.length - 1) return drive
+      return moveNextInput(drive)
     })
   }
   return newDrives
@@ -73,6 +91,7 @@ const moveNextInput = (drive: Drive): Drive => {
     // このコードを通ることはないはず
     newDrive.arrivalTime = Date.now()
   } else if (newDrive.pointName === undefined) {
+    newDrive.mode = DriveCondition.WAIT_FOR_POINT_NAME
   } else if (newDrive.departureTime === undefined) {
     newDrive.departureTime = Date.now()
     newDrive.mode = DriveCondition.WAIT_FOR_ARRIVAL
@@ -86,16 +105,16 @@ const isAllAreaInputed = (drive: Drive): boolean => {
     drive.pointName !== undefined &&
     drive.departureTime !== undefined
   ) {
-    return true;
+    return true
   }
-  return false;
+  return false
 }
 
 /**
  * 一番新しい運転履歴を取得します
  */
 const getLatestDrive = (drives: Drive[]): Drive => {
-  return drives[drives.length - 1];
+  return drives[drives.length - 1]
 }
 
 export const createRoute = () => {

@@ -2,7 +2,7 @@ import * as React from 'react'
 import { Text, View, TextInput, Button, StyleSheet } from 'react-native'
 import { useDispatch } from 'react-redux'
 import Modal from "react-native-modal"
-import { addPointName } from '../thunk/RouteThunk'
+import { addPointName, addPointNameCancel } from '../thunk/RouteThunk'
 
 /**
  * プロパティ定義
@@ -32,17 +32,13 @@ export default (props: PointNameDialogProps) => {
         </View>
         <View style={styles.pointNameDialogButtons}>
           <Button title="OK"
-            onPress={handleOK} />
+            onPress={() => dispatch(addPointName(pointName))} />
           <Button title="Cancel"
-            onPress={() => { }} />
+            onPress={() => dispatch(addPointNameCancel())} />
         </View>
       </View>
     </Modal>
   )
-
-  function handleOK() {
-    if (pointName !== undefined) dispatch(addPointName(pointName))
-  }
 }
 
 /**
