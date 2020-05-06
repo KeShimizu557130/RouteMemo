@@ -16,6 +16,11 @@ export default (props: PointNameDialogProps) => {
   const [pointMemo, setPointMemo] = React.useState<string>('')
   const dispatch = useDispatch()
 
+  React.useEffect(() => {
+    setPointName('')
+    setPointMemo('')
+  }, [props.isModalVisible])
+
   return (
     <Modal isVisible={props.isModalVisible}>
       <View style={styles.container}>

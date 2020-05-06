@@ -1,11 +1,12 @@
-import * as React from 'react';
-import { FlatList } from 'react-native';
-import { ListItem } from 'react-native-elements';
-import Modal from "react-native-modal";
+import * as React from 'react'
+import { FlatList } from 'react-native'
+import { ListItem } from 'react-native-elements'
+import Modal from "react-native-modal"
 
 export interface ListMenuItem {
   menuTitle: string
   onMenuPress: () => void
+  onMenuHide: () => void
 }
 
 /**
@@ -14,12 +15,13 @@ export interface ListMenuItem {
 export interface RouteHistoryListMenuProps {
   menuItems: ListMenuItem[]
   isModalVisible: boolean
-  onMenuHide: () => void
 }
+
+let handleOnModalHide: () => void
 
 export default (props: RouteHistoryListMenuProps) => {
   return (
-    <Modal isVisible={props.isModalVisible} onModalHide={props.onMenuHide}>
+    <Modal isVisible={props.isModalVisible} onModalHide={handleOnModalHide}>
       <FlatList
         data={props.menuItems}
         renderItem={value => renderList(value.item)}
@@ -29,7 +31,12 @@ export default (props: RouteHistoryListMenuProps) => {
 
   function renderList(item: ListMenuItem) {
     return (
-      <ListItem title={item.menuTitle} onPress={() => { item.onMenuPress() }} />
+      <ListItem title={item.menuTitle} onPress={() => handleOnPress(item)} />
     )
+  }
+
+  function handleOnPress(item: ListMenuItem) {
+    handleOnModalHide = item.onMenuHide
+    item.onMenuPress()
   }
 }

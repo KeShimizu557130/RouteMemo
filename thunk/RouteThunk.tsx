@@ -4,6 +4,9 @@ import { Drive, DriveImpl, DriveCondition } from '../domains/Drive'
 import AppStorage from '../AppStorage'
 import { setDrives, setAllRoute, setCurrentRoute } from '../reducers/RouteReducer'
 import { Route, RouteImpl } from '../domains/Route'
+import * as MailComposer from 'expo-mail-composer'
+import * as FileSystem from 'expo-file-system'
+import { dateFormat } from '../util/dateFormat'
 
 const appStorage = new AppStorage()
 
@@ -218,5 +221,54 @@ export const updateDrive = (newDrive: Drive) => {
       return drive
     })
     dispatch(setDrives(newDrives))
+  }
+}
+
+export const openMail = (selectedRouteId: number) => {
+  return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
+    const route = getState().route.currentRoute
+    const csv = convertToCSV(route.drives)
+
+    const uri = FileSystem.cacheDirectory + 'routeexport.csv'
+    FileSystem.writeAsStringAsync(uri, csv)
+    const status = MailComposer.composeAsync({
+      recipients: ['sample@gmail.com'],
+      subject: "RouteMemoエクスポート",
+      body: "ルート名称：" + route.routeName,
+      attachments: [uri]
+    })
+    // console.log('status:' + status)
+  }
+}
+
+const convertToCSV = (objArray: Drive[]): string => {
+  const fields = ['date', 'arrivalTime', 'pointName', 'departureTime', 'pointMemo']
+  let csv = fields.map(f => '"' + f + '"').join(', ') + '\r\n'
+
+  for (const obj of objArray) {
+    let line = ''
+    const exportDrive = convertDriveForExport(obj)
+    for (const field of fields) {
+      line += '"' + exportDrive[field] + '", '
+    }
+    csv += line.slice(0, -2) + '\r\n'
+  }
+  return csv
+}
+
+const convertDriveForExport = (drive: Drive): object => {
+  return {
+    date: dateToDateString(drive.arrivalTime),
+    arrivalTime: dateToTimeString(drive.arrivalTime),
+    pointName: drive.pointName,
+    departureTime: dateToTimeString(drive.departureTime),
+    pointMemo: drive.pointMemo
+  }
+
+  function dateToTimeString(date: number) {
+    return ((typeof date === 'undefined') ? '' : dateFormat.format(new Date(date), 'hh:mm:ss'))
+  }
+  function dateToDateString(date: number) {
+    return ((typeof date === 'undefined') ? '' : dateFormat.format(new Date(date), 'yyyy/MM/dd'))
   }
 }

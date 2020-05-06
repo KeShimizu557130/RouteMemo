@@ -4,9 +4,9 @@ import { useSelector, useDispatch } from 'react-redux'
 import { ListItem } from 'react-native-elements'
 import { Route } from '../domains/Route'
 import { AppStateInterface } from '../store/store'
-import RouteHistoryListMenu from '../components/RouteHistoryListMenu'
+import RouteHistoryListMenu, { ListMenuItem } from '../components/RouteHistoryListMenu'
 import RouteNameDialog from '../components/RouteNameDialog'
-import { createRoute, renameRoute, loadRoute } from '../thunk/RouteThunk'
+import { createRoute, renameRoute, loadRoute, openMail } from '../thunk/RouteThunk'
 import { NavigationScreenProp } from 'react-navigation'
 
 interface RouteHistoryProps {
@@ -22,6 +22,15 @@ export default (props: RouteHistoryProps) => {
   const [isRoutenameDialogVisible, setRoutenameDialogVisible] = React.useState<boolean>(false)
   const [selectedRouteId, setSelectedRouteId] = React.useState<number>(-1)
   const dispatch = useDispatch()
+  const menuItems: ListMenuItem[] = [{
+    menuTitle: 'rename',
+    onMenuPress: () => setPopupmenuVisible(false),
+    onMenuHide: () => setRoutenameDialogVisible(true)
+  }, {
+    menuTitle: 'export',
+    onMenuPress: handleRouteExportExec,
+    onMenuHide: () => { }
+  }]
 
   return (
     <View style={styles.container}>
@@ -35,8 +44,7 @@ export default (props: RouteHistoryProps) => {
         onRenameCancel={() => setRoutenameDialogVisible(false)} />
       <MenuArea
         isPopupmenuVisible={isPopupmenuVisible}
-        onRenameBegin={() => setPopupmenuVisible(false)}
-        onMenuHide={() => setRoutenameDialogVisible(true)} />
+        menuItems={menuItems} />
     </View>
   )
 
@@ -62,6 +70,11 @@ export default (props: RouteHistoryProps) => {
   function handleRouteRenameExec(newRouteName: string) {
     dispatch(renameRoute(selectedRouteId, newRouteName))
     setRoutenameDialogVisible(false)
+  }
+
+  function handleRouteExportExec() {
+    dispatch(openMail(selectedRouteId))
+    setPopupmenuVisible(false)
   }
 }
 
@@ -123,14 +136,11 @@ const ModalArea: React.FC<{ isRoutenameDialogVisible: boolean, onRenameOK: (newR
 /**
  * メニュー表示領域
  */
-const MenuArea: React.FC<{ isPopupmenuVisible: boolean, onRenameBegin: () => void, onMenuHide: () => void }> = ({ isPopupmenuVisible, onRenameBegin, onMenuHide }) => {
+const MenuArea: React.FC<{ isPopupmenuVisible: boolean, menuItems: ListMenuItem[] }> = ({ isPopupmenuVisible, menuItems }) => {
   return (
     <RouteHistoryListMenu
-      menuItems={[
-        { menuTitle: 'rename', onMenuPress: () => onRenameBegin() }
-      ]}
+      menuItems={menuItems}
       isModalVisible={isPopupmenuVisible}
-      onMenuHide={onMenuHide}
     />
   )
 }
