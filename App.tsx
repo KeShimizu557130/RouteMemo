@@ -7,13 +7,15 @@ import RootScreen from './pages/RootScreen'
 import RouteEntry from './pages/RouteEntry'
 import RouteHistory from './pages/RouteHistory'
 import DriveEdit from './pages/DriveEdit'
+import AppSettings from './pages/AppSettings'
 
 const RootStack = createStackNavigator(
   {
     Root: { screen: RootScreen },
     Entry: { screen: RouteEntry },
     History: { screen: RouteHistory },
-    Edit: { screen: DriveEdit }
+    Edit: { screen: DriveEdit },
+    Settings: { screen: AppSettings }
   },
   {
     initialRouteName: 'Root'

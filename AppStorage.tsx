@@ -1,7 +1,7 @@
-import { Drive } from './domains/Drive';
-import { Route } from './domains/Route';
-import Storage from 'react-native-storage';
-import { AsyncStorage } from 'react-native';
+import { Drive } from './domains/Drive'
+import { Route } from './domains/Route'
+import Storage from 'react-native-storage'
+import { AsyncStorage } from 'react-native'
 
 const storage = new Storage({
   size: 1000,
@@ -72,6 +72,33 @@ export default class AppStorage {
     return {
       allRoutes: allRoutes,
       currentRouteId: currentRouteId
+    }
+  }
+
+  saveSettings = (key: string, value: string) => {
+    try {
+      storage.save({
+        key: 'settings.' + key,
+        data: value
+      })
+    } catch (error) {
+      // Error saving data
+      console.warn('err:' + error)
+    }
+  }
+
+  loadSettings = async (key: string) => {
+    try {
+      const value: string = await storage.load({ key: 'settings.' + key })
+      return value
+    } catch (error) {
+      switch (error.name) {
+        case 'NotFoundError':
+          return ''
+        default:
+          console.warn('err:' + error)
+          break
+      }
     }
   }
 }

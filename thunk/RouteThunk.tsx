@@ -232,7 +232,7 @@ export const openMail = (selectedRouteId: number) => {
     const uri = FileSystem.cacheDirectory + 'routeexport.csv'
     FileSystem.writeAsStringAsync(uri, csv)
     const status = MailComposer.composeAsync({
-      recipients: ['sample@gmail.com'],
+      recipients: [getState().settings.exportMailAddress],
       subject: "RouteMemoエクスポート",
       body: "ルート名称：" + route.routeName,
       attachments: [uri]
