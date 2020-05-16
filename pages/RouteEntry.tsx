@@ -98,8 +98,15 @@ const ButtonArea = () => {
  */
 const ModalArea = () => {
   return (
-    <PointNameDialog isModalVisible={isModalVisible()} />
+    <PointNameDialog isModalVisible={isModalVisible()} defaultPointName={getDefaultPointName()} />
   )
+
+  function getDefaultPointName(): string {
+    const currentRoute = useSelector<AppStateInterface>(state => state.route.currentRoute)
+    const defaultPointName = useSelector<AppStateInterface>(state => state.settings.defaultFirstPointName)
+    if (currentRoute.drives.length === 1) return defaultPointName
+    else return ''
+  }
 
   function isModalVisible(): boolean {
     const currentRoute = useSelector<AppStateInterface>(state => state.route.currentRoute)

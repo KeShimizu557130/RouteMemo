@@ -9,6 +9,7 @@ import { addPointName, addPointNameCancel } from '../thunk/RouteThunk'
  */
 export interface PointNameDialogProps {
   isModalVisible: boolean
+  defaultPointName: string
 }
 
 export default (props: PointNameDialogProps) => {
@@ -17,7 +18,7 @@ export default (props: PointNameDialogProps) => {
   const dispatch = useDispatch()
 
   React.useEffect(() => {
-    setPointName('')
+    setPointName(props.defaultPointName)
     setPointMemo('')
   }, [props.isModalVisible])
 
@@ -26,7 +27,9 @@ export default (props: PointNameDialogProps) => {
       <View style={styles.container}>
         <View>
           <Text>地点名</Text>
-          <TextInput style={styles.pointNameInput}
+          <TextInput
+            style={styles.pointNameInput}
+            value={pointName}
             onChangeText={(text) => setPointName(text)} />
         </View>
         <View>

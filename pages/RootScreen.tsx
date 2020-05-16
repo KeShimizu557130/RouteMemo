@@ -14,7 +14,6 @@ export default () => {
 
   React.useEffect(() => {
     dispatch(loadAllSettings())
-    console.log('RootScreen mount')
   }, [])
 
   return (
