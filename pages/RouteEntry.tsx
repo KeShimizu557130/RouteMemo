@@ -5,7 +5,7 @@ import { Drive, DriveCondition } from '../domains/Drive'
 import DriveList from '../components/DriveList'
 import PointNameDialog from '../components/PointNameDialog'
 import { AppStateInterface } from '../store/store'
-import { addNewRecord, saveAllRoutes, loadAllRoutes } from '../thunk/RouteThunk'
+import { addNewRecord, saveAllRoutes, loadAllRoutes, backRecord } from '../thunk/RouteThunk'
 
 /**
  * ApplicationComponent
@@ -60,6 +60,7 @@ const ButtonArea = () => {
       <Button title="Store" onPress={handleStoreBtnClick} />
       <Button title="Restore" onPress={handleRestoreBtnClick} />
       <Button title="ViewStore" onPress={dumpStore} />
+      <Button title="BackRecord" onPress={handleBackRecordBtnClick} />
     </View>
   )
 
@@ -83,6 +84,11 @@ const ButtonArea = () => {
   function handleRestoreBtnClick() {
     dispatch(loadAllRoutes())
   }
+
+  function handleBackRecordBtnClick() {
+    dispatch(backRecord())
+  }
+
   /**
    * デバッグ用
    */

@@ -121,6 +121,37 @@ const getLatestDrive = (drives: Drive[]): Drive => {
   return drives[drives.length - 1]
 }
 
+/**
+ * 時刻ログを削除します。
+ * 地点名は削除しません。
+ */
+export const backRecord = () => {
+  return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
+    const drives = getState().route.currentRoute.drives
+    const newDrives = drives.map((drive, index) => {
+      if (index !== drives.length - 1) return drive
+      return moveInputBack(drive)
+    })
+    if (getLatestDrive(newDrives).arrivalTime === undefined) {
+      // 到着時刻undefinedのときは、最後の要素を削除
+      newDrives.pop()
+    }
+    dispatch(setDrives(newDrives))
+  }
+}
+
+const moveInputBack = (drive: Drive): Drive => {
+  const newDrive = { ...drive }
+  if (newDrive.departureTime !== undefined) {
+    newDrive.departureTime = undefined
+  } else if (newDrive.pointName !== undefined) {
+    // 地点名入力済み、到着時刻未入力の場合は何もしない
+  } else if (newDrive.arrivalTime !== undefined) {
+    newDrive.arrivalTime = undefined
+  }
+  return newDrive
+}
+
 export const createRoute = () => {
   return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
     const state = getState().route

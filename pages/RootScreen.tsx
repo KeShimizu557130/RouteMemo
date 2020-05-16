@@ -6,6 +6,7 @@ import RouteHistory from './RouteHistory'
 import AppSettings from './AppSettings'
 import { loadAllSettings } from '../thunk/SettingsThunk'
 import { useDispatch } from 'react-redux'
+import DriveEdit from './DriveEdit'
 
 const Drawer = createDrawerNavigator()
 
@@ -22,6 +23,7 @@ export default () => {
         <Drawer.Screen name="Entry" component={RouteEntry} />
         <Drawer.Screen name="History" component={RouteHistory} />
         <Drawer.Screen name="Settings" component={AppSettings} />
+        <Drawer.Screen name="Edit" component={DriveEdit} />
       </Drawer.Navigator>
     </NavigationContainer>
   )
