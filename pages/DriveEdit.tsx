@@ -31,10 +31,18 @@ export default ({ route, navigation }) => {
         pointMemo={drive.pointMemo}
         arrivalTime={drive.arrivalTime}
         departureTime={drive.departureTime} />
-      <ButtonArea navigation={navigation} originDrive={route.params.drive} editDrive={drive} />
+      <ButtonArea onRecordNow={handleOnRecordNow} navigation={navigation} originDrive={route.params.drive} editDrive={drive} />
       <ModalArea isVisible={isVisibleTimePicker} value={drive.arrivalTime} onTimePicked={handleOnTimePicked} />
     </View>
   )
+
+  function handleOnRecordNow(item: string) {
+    if (item === 'Arrival') {
+      setDrive({ ...drive, arrivalTime: Date.now() })
+    } else if (item === 'Departure') {
+      setDrive({ ...drive, departureTime: Date.now() })
+    }
+  }
 
   function handleOnTimeTap(item: string) {
     setEditingTimeItem(item)
@@ -44,9 +52,9 @@ export default ({ route, navigation }) => {
   function handleOnTimePicked(event: Event, selectedDate: Date) {
     setTimePickerVisible(false)
     if (typeof selectedDate !== 'undefined') {
-      if (editingTimeItem == 'Arrival') {
+      if (editingTimeItem === 'Arrival') {
         setDrive({ ...drive, arrivalTime: selectedDate.getTime() })
-      } else if (editingTimeItem == 'Departure') {
+      } else if (editingTimeItem === 'Departure') {
         setDrive({ ...drive, departureTime: selectedDate.getTime() })
       }
     }
@@ -104,13 +112,15 @@ const DriveDataArea: React.FC<{ onPointNameChange: (string) => void, onPointMemo
 /**
  * ボタン表示領域
  */
-const ButtonArea: React.FC<{ navigation: NavigationScreenProp<any, any>, originDrive: Drive, editDrive: Drive }> = ({ navigation, originDrive, editDrive }) => {
+const ButtonArea: React.FC<{ onRecordNow: (string) => void, navigation: NavigationScreenProp<any, any>, originDrive: Drive, editDrive: Drive }> = ({ onRecordNow, navigation, originDrive, editDrive }) => {
   const dispatch = useDispatch()
 
   return (
     <View>
       <Button title="OK" onPress={handleRecordBtnClick} />
       <Button title="Cancel" onPress={handleStoreBtnClick} />
+      <Button title="今到着" onPress={() => onRecordNow('Arrival')} />
+      <Button title="今出発" onPress={() => onRecordNow('Departure')} />
     </View>
   )
 
