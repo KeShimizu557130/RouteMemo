@@ -68,18 +68,23 @@ export const addPointNameCancel = () => {
  * ログを追加します
  */
 const addNewRecordImpl = (drives: Drive[]): Drive[] => {
-  let newDrives
+  let newDrives: Drive[]
   if (drives.length === 0 || isAllAreaInputed(getLatestDrive(drives))) {
     newDrives = [...drives]
-    newDrives.push(
-      new DriveImpl(
+    const newDrive = new DriveImpl(
         drives.length,
         undefined,
         Date.now(),
         undefined,
         DriveCondition.WAIT_FOR_POINT_NAME
       )
-    )
+    newDrives.push(newDrive)
+    if (newDrives.length > 1) {
+      // 移動時間設定
+      const previousDrive = {...newDrives[newDrives.length - 2]}
+      previousDrive.driveTime = calcDriveTime(newDrive, previousDrive)
+      newDrives[newDrives.length - 2] = previousDrive
+    }
   } else {
     newDrives = drives.map((drive, index) => {
       if (index !== drives.length - 1) return drive
@@ -87,6 +92,10 @@ const addNewRecordImpl = (drives: Drive[]): Drive[] => {
     })
   }
   return newDrives
+}
+
+const calcDriveTime = (drive: Drive, prevDrive: Drive): number => {
+  return drive.arrivalTime - prevDrive.departureTime - 9 * 3600 * 1000
 }
 
 const moveNextInput = (drive: Drive): Drive => {
@@ -246,11 +255,26 @@ export const loadRoute = (route: Route) => {
 
 export const updateDrive = (newDrive: Drive) => {
   return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
-    const state = getState().route
-    const newDrives = state.currentRoute.drives.map((drive) => {
-      if (drive.id === newDrive.id) return newDrive
+    const currentDrives = getState().route.currentRoute.drives
+    let updateIndex
+    const newDrives = currentDrives.map((drive, index) => {
+      if (drive.id === newDrive.id) {
+        updateIndex = index
+        // 移動時間(後)更新
+        if (currentDrives.length > updateIndex + 1) {
+          const nextDrive = {...currentDrives[updateIndex + 1]}
+          newDrive.driveTime = calcDriveTime(nextDrive, newDrive)
+        }
+        return newDrive
+      }
       return drive
     })
+    // 移動時間(前)更新
+    if (updateIndex > 0) {
+      const prevDrive = {...currentDrives[updateIndex - 1]}
+      prevDrive.driveTime = calcDriveTime(newDrive, prevDrive)
+      newDrives[updateIndex - 1] = prevDrive
+    }
     dispatch(setDrives(newDrives))
   }
 }

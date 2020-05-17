@@ -11,6 +11,7 @@ export interface Drive {
   departureTime?: number
   mode: DriveCondition
   pointMemo?: string
+  driveTime?: number
 }
 
 export class DriveImpl implements Drive {
@@ -19,7 +20,8 @@ export class DriveImpl implements Drive {
   arrivalTime?: number
   departureTime?: number
   mode: DriveCondition
-  pointMemo: string
+  pointMemo?: string
+  driveTime?: number
 
   /**
    * コンストラクタ

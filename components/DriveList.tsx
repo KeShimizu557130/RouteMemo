@@ -28,7 +28,7 @@ export default (props: DriveListProps) => {
       </TouchableHighlight>
       <View style={styles.rowLower}>
         <View style={styles.verticalLine} />
-        <Text style={styles.move}>↓</Text>
+        <Text style={styles.move}>{dateToString(props.drive.driveTime)}</Text>
       </View>
     </View>
   )
@@ -99,6 +99,8 @@ const styles = StyleSheet.create({
   },
 
   move: {
-    fontSize: 14,
+    fontSize: 12,
+    marginLeft: 10,
+    marginTop: 5,
   },
 });
