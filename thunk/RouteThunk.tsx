@@ -68,8 +68,17 @@ export const addPointNameCancel = () => {
  * ログを追加します
  */
 const addNewRecordImpl = (drives: Drive[]): Drive[] => {
-  let newDrives: Drive[]
-  if (drives.length === 0 || isAllAreaInputed(getLatestDrive(drives))) {
+  let newDrives: Drive[] = []
+  if (drives.length === 0) {
+    const newDrive = new DriveImpl(
+        drives.length,
+        undefined,
+        0,
+        undefined,
+        DriveCondition.WAIT_FOR_POINT_NAME
+      )
+    newDrives.push(newDrive)
+  } else if (isAllAreaInputed(getLatestDrive(drives))) {
     newDrives = [...drives]
     const newDrive = new DriveImpl(
         drives.length,

@@ -21,8 +21,8 @@ export default (props: DriveListProps) => {
             <Text>{props.drive.pointName != undefined && props.drive.pointName}</Text>
           </View>
           <View style={styles.right}>
-            <Text style={styles.time}>{dateToString(props.drive.arrivalTime)}着</Text>
-            <Text style={styles.time}>{dateToString(props.drive.departureTime)}発</Text>
+            <Text style={styles.time}>{dateToDisplayForm(dateToString(props.drive.arrivalTime), '着')}</Text>
+            <Text style={styles.time}>{dateToDisplayForm(dateToString(props.drive.departureTime), '発')}</Text>
           </View>
         </View>
       </TouchableHighlight>
@@ -33,12 +33,21 @@ export default (props: DriveListProps) => {
     </View>
   )
 
-  function onPress() {
+  function onPress(): void {
     props.navigation.navigate('Edit', { drive: props.drive })
   }
 
-  function dateToString(date: number) {
-    return ((typeof date === "undefined") ? "" : dateFormat.format(new Date(date), 'hh:mm'))
+  function dateToString(date: number): string {
+    // return ((typeof date === "undefined") ? "" : dateFormat.format(new Date(date), 'hh:mm'))
+    if (typeof date === "undefined" || date === 0) {
+        return ''
+    } else {
+        return dateFormat.format(new Date(date), 'hh:mm')
+    }
+  }
+
+  function dateToDisplayForm(date: string, item: string): string {
+      return (date === '') ? '' : date + item
   }
 }
 
