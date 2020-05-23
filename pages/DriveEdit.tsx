@@ -32,9 +32,17 @@ export default ({ route, navigation }) => {
         arrivalTime={drive.arrivalTime}
         departureTime={drive.departureTime} />
       <ButtonArea onRecordNow={handleOnRecordNow} navigation={navigation} originDrive={route.params.drive} editDrive={drive} />
-      <ModalArea isVisible={isVisibleTimePicker} value={drive.arrivalTime} onTimePicked={handleOnTimePicked} />
+      <ModalArea isVisible={isVisibleTimePicker} value={getTimePickerDefaultValue()} onTimePicked={handleOnTimePicked} />
     </View>
   )
+
+  function getTimePickerDefaultValue() {
+    if (editingTimeItem === 'Departure') {
+      return drive.departureTime
+    } else {
+      return drive.arrivalTime
+    }
+  }
 
   function handleOnRecordNow(item: string) {
     if (item === 'Arrival') {
