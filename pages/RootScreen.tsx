@@ -7,6 +7,7 @@ import AppSettings from './AppSettings'
 import { loadAllSettings } from '../thunk/SettingsThunk'
 import { useDispatch } from 'react-redux'
 import DriveEdit from './DriveEdit'
+import SideBar from '../components/SideBar'
 
 const Drawer = createDrawerNavigator()
 
@@ -19,7 +20,7 @@ export default () => {
 
   return (
     <NavigationContainer>
-      <Drawer.Navigator initialRouteName="Entry">
+      <Drawer.Navigator initialRouteName="Entry" drawerContent={props => <SideBar {...props} />}>
         <Drawer.Screen name="Entry" component={RouteEntry} />
         <Drawer.Screen name="History" component={RouteHistory} />
         <Drawer.Screen name="Settings" component={AppSettings} />
