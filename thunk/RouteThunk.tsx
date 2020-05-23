@@ -184,6 +184,7 @@ export const createRoute = () => {
     // currentRouteに新しいRouteを設定する
     const newCurrentRoute = RouteImpl.newRoute()
     newRoutes.push(newCurrentRoute)
+    newRoutes.sort((a, b) => b.id - a.id)
 
     dispatch(setAllRoute(newRoutes))
     dispatch(setCurrentRoute(newCurrentRoute))
