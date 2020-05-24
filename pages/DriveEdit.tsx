@@ -59,6 +59,8 @@ export default ({ route, navigation }) => {
 
   function handleOnTimePicked(event: Event, selectedDate: Date) {
     setTimePickerVisible(false)
+    selectedDate.setSeconds(0)
+    selectedDate.setMilliseconds(0)
     if (typeof selectedDate !== 'undefined') {
       if (editingTimeItem === 'Arrival') {
         setDrive({ ...drive, arrivalTime: selectedDate.getTime() })
