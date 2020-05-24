@@ -27,7 +27,7 @@ export default (props: AppSettingsProps) => {
         <ListItem icon onPress={() => handleOnListItemPress('exportMailAddress')}>
           <Left>
             <Button style={{ backgroundColor: "#007AFF" }}>
-              <Icon active name="wifi" />
+              <Icon active type='FontAwesome' name='envelope' />
             </Button>
           </Left>
           <Body>
@@ -40,7 +40,7 @@ export default (props: AppSettingsProps) => {
         <ListItem icon onPress={() => handleOnListItemPress('defaultFirstPointName')}>
           <Left>
             <Button style={{ backgroundColor: "#007AFF" }}>
-              <Icon active name="bluetooth" />
+              <Icon active type='FontAwesome' name='home' />
             </Button>
           </Left>
           <Body>
@@ -52,8 +52,11 @@ export default (props: AppSettingsProps) => {
         </ListItem>
       </Content>
       <Prompt
-        title="Say something"
-        inputPlaceholder="Enter Some Text"
+        title={promptTitle()}
+        inputPlaceholder=''
+        defaultValue={promptDefaultValue()}
+        submitButtonText='OK'
+        cancelButtonText='Cancel'
         isVisible={isVisible}
         onChangeText={(text) => setPromptVal(text)}
         onCancel={() => setVisible(false)}
@@ -62,6 +65,22 @@ export default (props: AppSettingsProps) => {
       />
     </Container>
   )
+
+  function promptTitle() {
+    switch (promptItem) {
+      case 'exportMailAddress': return 'エクスポート用メールアドレス'
+      case 'defaultFirstPointName': return '最初の地点名'
+      default: return ''
+    }
+  }
+
+  function promptDefaultValue() {
+    switch (promptItem) {
+      case 'exportMailAddress': return settings.exportMailAddress
+      case 'defaultFirstPointName': return settings.defaultFirstPointName
+      default: return ''
+    }
+  }
 
   function handleOnPromptSubmit() {
     setVisible(false)
