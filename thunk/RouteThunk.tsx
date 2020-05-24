@@ -243,6 +243,17 @@ const renameRouteImpl = (routes: Route[], routeId: number, newRouteName: string)
   return newRoutes
 }
 
+/**
+ * ルートを削除します
+ * @param routeId 削除対象のルートID
+ */
+export const deleteRoute = (routeId: number) => {
+  return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
+    const newRoutes = getState().route.allRoutes.filter(value => value.id !== routeId)
+    dispatch(setAllRoute(newRoutes))
+  }
+}
+
 export const loadRoute = (route: Route) => {
   return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
     const state = getState().route

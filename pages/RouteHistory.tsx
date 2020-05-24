@@ -6,7 +6,7 @@ import { Route } from '../domains/Route'
 import { AppStateInterface } from '../store/store'
 import RouteHistoryListMenu, { ListMenuItem } from '../components/RouteHistoryListMenu'
 import RouteNameDialog from '../components/RouteNameDialog'
-import { createRoute, renameRoute, loadRoute, openMail } from '../thunk/RouteThunk'
+import { createRoute, renameRoute, deleteRoute, loadRoute, openMail } from '../thunk/RouteThunk'
 import { NavigationScreenProp } from 'react-navigation'
 
 interface RouteHistoryProps {
@@ -29,6 +29,10 @@ export default (props: RouteHistoryProps) => {
   }, {
     menuTitle: 'export',
     onMenuPress: handleRouteExportExec,
+    onMenuHide: () => { }
+  }, {
+    menuTitle: 'delete',
+    onMenuPress: handleRouteDelete,
     onMenuHide: () => { }
   }]
 
@@ -72,6 +76,17 @@ export default (props: RouteHistoryProps) => {
     setRoutenameDialogVisible(false)
   }
 
+  /**
+   * ルート削除
+   */
+  function handleRouteDelete() {
+    dispatch(deleteRoute(selectedRouteId))
+    setPopupmenuVisible(false)
+  }
+
+  /**
+   * ルートエクスポート
+   */
   function handleRouteExportExec() {
     dispatch(openMail(selectedRouteId))
     setPopupmenuVisible(false)
