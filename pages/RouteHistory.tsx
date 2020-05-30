@@ -119,7 +119,7 @@ export default (props: RouteHistoryProps) => {
 const RouteHistoryArea: React.FC<{ allRoutes: Route[], onRouteTap: (Route) => void, onRouteLongTap: (Route) => void }> = ({ allRoutes, onRouteTap, onRouteLongTap }) => {
   return (
     <View>
-      <Text>Route History</Text>
+      <Text>ルート履歴</Text>
       <FlatList<Route>
         data={allRoutes}
         renderItem={value => renderList(value.item)}
