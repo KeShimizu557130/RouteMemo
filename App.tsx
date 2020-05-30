@@ -18,7 +18,8 @@ const RootStack = createStackNavigator(
     Settings: { screen: AppSettings }
   },
   {
-    initialRouteName: 'Root'
+    initialRouteName: 'Root',
+    headerMode: 'none'
   }
 )
 
