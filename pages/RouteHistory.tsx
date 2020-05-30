@@ -21,6 +21,8 @@ export default (props: RouteHistoryProps) => {
   const [isPopupmenuVisible, setPopupmenuVisible] = React.useState<boolean>(false)
   const [isRoutenameDialogVisible, setRoutenameDialogVisible] = React.useState<boolean>(false)
   const [selectedRouteId, setSelectedRouteId] = React.useState<number>(-1)
+  const allRoutes: Route[] = useSelector<AppStateInterface>(state => state.route.allRoutes)
+
   const dispatch = useDispatch()
   const menuItems: ListMenuItem[] = [{
     menuTitle: 'rename',
@@ -39,6 +41,7 @@ export default (props: RouteHistoryProps) => {
   return (
     <View style={styles.container}>
       <RouteHistoryArea
+        allRoutes={allRoutes}
         onRouteTap={handleRouteTap}
         onRouteLongTap={handleRouteLongTop} />
       <ButtonArea />
@@ -82,7 +85,7 @@ export default (props: RouteHistoryProps) => {
   function handleRouteDelete() {
     Alert.alert(
       "ルート削除",
-      "〜を削除してもよろしいですか？",
+      "「" + allRoutes.find(val => val.id === selectedRouteId).routeName + "」を削除してもよろしいですか？",
       [
         {
           text: "Cancel",
@@ -113,9 +116,7 @@ export default (props: RouteHistoryProps) => {
 /**
 * ルート表示領域
 */
-const RouteHistoryArea: React.FC<{ onRouteTap: (Route) => void, onRouteLongTap: (Route) => void }> = ({ onRouteTap, onRouteLongTap }) => {
-  const allRoutes = useSelector<AppStateInterface>(state => state.route.allRoutes)
-
+const RouteHistoryArea: React.FC<{ allRoutes: Route[], onRouteTap: (Route) => void, onRouteLongTap: (Route) => void }> = ({ allRoutes, onRouteTap, onRouteLongTap }) => {
   return (
     <View>
       <Text>Route History</Text>
