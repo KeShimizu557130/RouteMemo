@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { View, Text, Button, StyleSheet, FlatList } from 'react-native'
+import { View, Text, Button, StyleSheet, FlatList, Alert } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
 import { ListItem } from 'react-native-elements'
 import { Route } from '../domains/Route'
@@ -32,8 +32,8 @@ export default (props: RouteHistoryProps) => {
     onMenuHide: () => { }
   }, {
     menuTitle: 'delete',
-    onMenuPress: handleRouteDelete,
-    onMenuHide: () => { }
+    onMenuPress: () => setPopupmenuVisible(false),
+    onMenuHide: handleRouteDelete
   }]
 
   return (
@@ -80,8 +80,25 @@ export default (props: RouteHistoryProps) => {
    * ルート削除
    */
   function handleRouteDelete() {
-    dispatch(deleteRoute(selectedRouteId))
-    setPopupmenuVisible(false)
+    Alert.alert(
+      "ルート削除",
+      "〜を削除してもよろしいですか？",
+      [
+        {
+          text: "Cancel",
+          onPress: () => {},
+          style: "cancel"
+        },
+        {
+          text: "OK",
+          onPress: () => {
+            dispatch(deleteRoute(selectedRouteId))
+            setPopupmenuVisible(false)
+          }
+        }
+      ],
+      { cancelable: true }
+    );
   }
 
   /**
