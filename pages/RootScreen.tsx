@@ -4,6 +4,7 @@ import { NavigationContainer } from '@react-navigation/native'
 import RouteEntry from './RouteEntry'
 import RouteHistory from './RouteHistory'
 import AppSettings from './AppSettings'
+import { loadAllRoutes } from '../thunk/RouteThunk'
 import { loadAllSettings } from '../thunk/SettingsThunk'
 import { useDispatch } from 'react-redux'
 import DriveEdit from './DriveEdit'
@@ -15,6 +16,7 @@ export default () => {
   const dispatch = useDispatch()
 
   React.useEffect(() => {
+    dispatch(loadAllRoutes())
     dispatch(loadAllSettings())
   }, [])
 

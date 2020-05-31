@@ -18,7 +18,9 @@ export const loadAllSettings = () => {
   return async (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
     let key = 'exportMailAddress'
     try {
+      // ストレージに保存
       const value = await appStorage.loadSettings(key)
+      // Redux Storeに保存
       if (value !== '') dispatch(setSettingValue({ key: key, value: value }))
     } catch (error) {
       console.warn('err:' + error)

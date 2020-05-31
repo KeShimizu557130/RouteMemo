@@ -44,7 +44,7 @@ export default (props: RouteHistoryProps) => {
         allRoutes={allRoutes}
         onRouteTap={handleRouteTap}
         onRouteLongTap={handleRouteLongTop} />
-      <ButtonArea />
+      <ButtonArea navigation={props.navigation} />
       <ModalArea
         isRoutenameDialogVisible={isRoutenameDialogVisible}
         onRenameOK={handleRouteRenameExec}
@@ -145,12 +145,17 @@ const RouteHistoryArea: React.FC<{ allRoutes: Route[], onRouteTap: (Route) => vo
 /**
  * ボタン表示領域
  */
-const ButtonArea = () => {
+const ButtonArea: React.FC<{ navigation: NavigationScreenProp<any, any> }> = ({ navigation }) => {
   const dispatch = useDispatch()
 
   return (
-    <Button title="NewRoute" onPress={() => dispatch(createRoute())} />
+    <Button title="NewRoute" onPress={handleOnPress} />
   )
+
+  function handleOnPress() {
+    dispatch(createRoute())
+    navigation.navigate('Entry')
+  }
 }
 
 /**
