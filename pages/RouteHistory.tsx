@@ -6,8 +6,9 @@ import { Route } from '../domains/Route'
 import { AppStateInterface } from '../store/store'
 import RouteHistoryListMenu, { ListMenuItem } from '../components/RouteHistoryListMenu'
 import RouteNameDialog from '../components/RouteNameDialog'
-import { createRoute, renameRoute, deleteRoute, loadRoute, openMail } from '../thunk/RouteThunk'
+import { createRoute, renameRoute, deleteRoute, loadRoute, openMail, mergeCurrentRouteToAllRoute } from '../thunk/RouteThunk'
 import { NavigationScreenProp } from 'react-navigation'
+import { useFocusEffect } from '@react-navigation/native';
 
 interface RouteHistoryProps {
   navigation: NavigationScreenProp<any, any>
@@ -37,6 +38,13 @@ export default (props: RouteHistoryProps) => {
     onMenuPress: () => setPopupmenuVisible(false),
     onMenuHide: handleRouteDelete
   }]
+
+  useFocusEffect(React.useCallback(() => {
+      console.debug("screen takes focus")
+      dispatch(mergeCurrentRouteToAllRoute())
+
+      return () => {}
+    }, []))
 
   return (
     <View style={styles.container}>

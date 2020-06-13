@@ -29,7 +29,7 @@ export const addNewRecord = () => {
   return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
     const newDrives: Drive[] = addNewRecordImpl(getState().route.currentRoute.drives)
     dispatch(setDrives(newDrives))
-    appStorage.saveCurrentRoute(newDrives)
+    appStorage.saveCurrentDrives(newDrives)
   }
 }
 
@@ -45,7 +45,7 @@ export const addPointName = (pointName: string, pointMemo: string) => {
       return newDrive
     })
     dispatch(setDrives(newDrives))
-    appStorage.saveCurrentRoute(newDrives)
+    appStorage.saveCurrentDrives(newDrives)
   }
 }
 
@@ -63,7 +63,7 @@ export const addPointNameCancel = () => {
       return newDrive
     })
     dispatch(setDrives(newDrives))
-    appStorage.saveCurrentRoute(newDrives)
+    appStorage.saveCurrentDrives(newDrives)
   }
 }
 
@@ -158,7 +158,7 @@ export const backRecord = () => {
       newDrives.pop()
     }
     dispatch(setDrives(newDrives))
-    appStorage.saveCurrentRoute(newDrives)
+    appStorage.saveCurrentDrives(newDrives)
   }
 }
 
@@ -268,24 +268,33 @@ export const deleteRoute = (routeId: number) => {
   }
 }
 
-export const loadRoute = (route: Route) => {
+export const mergeCurrentRouteToAllRoute = () => {
   return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
     const state = getState().route
-
-    // currentRouteがallRoutesに反映されていない場合、引数のrouteには古いルートが入っている
-    // なので引数routeをそのまま現在のルートに上書きはせず、allRoutes中のrouteIdに対応するルートを現在のルートにする
 
     // 現在のルートをallRoutesに保存
     const newRoutes = state.allRoutes.map(val => {
       if (val.id !== state.currentRouteId) return val
       return state.currentRoute
     })
+    dispatch(setAllRoute(newRoutes))
+    appStorage.saveAllRoutes(newRoutes, state.currentRouteId)
+  }
+} 
+
+export const loadRoute = (route: Route) => {
+  return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
+    const state = getState().route
+
+    // currentRouteがallRoutesに反映されていない場合、引数のrouteには古いルートが入っている
+    // なので引数routeをそのまま現在のルートに上書きはせず、allRoutes中のrouteIdに対応するルートを現在のルートにする
+    // →この処理は RouteHistory.useFocusEffect に移動
 
     // 引数routeのidに対応するルートをcurrentRouteに設定する
-    const newRoute = { ...newRoutes.find(val => val.id === route.id) }
-    dispatch(setAllRoute(newRoutes))
+    const newRoute = { ...state.allRoutes.find(val => val.id === route.id) }
+    
     dispatch(setCurrentRoute(newRoute))
-    appStorage.saveAllRoutes(newRoutes, newRoute.id)
+    appStorage.saveCurrentRouteId(newRoute.id)
   }
 }
 
@@ -312,7 +321,7 @@ export const updateDrive = (newDrive: Drive) => {
       newDrives[updateIndex - 1] = prevDrive
     }
     dispatch(setDrives(newDrives))
-    appStorage.saveCurrentRoute(newDrives)
+    appStorage.saveCurrentDrives(newDrives)
   }
 }
 

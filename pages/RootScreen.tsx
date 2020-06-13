@@ -16,6 +16,7 @@ export default () => {
   const dispatch = useDispatch()
 
   React.useEffect(() => {
+    console.debug("RootScreen useEffect")
     dispatch(loadAllRoutes())
     dispatch(loadAllSettings())
   }, [])

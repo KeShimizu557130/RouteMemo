@@ -13,7 +13,7 @@ const storage = new Storage({
 
 export default class AppStorage {
 
-  saveCurrentRoute = (drives: Drive[]) => {
+  saveCurrentDrives = (drives: Drive[]) => {
     try {
       storage.save({
         key: 'currentDrives',
@@ -21,6 +21,18 @@ export default class AppStorage {
       })
     } catch (error) {
       // Error saving data
+    }
+  }
+
+  saveCurrentRouteId = (currentRouteId: number) => {
+    try {
+      storage.save({
+        key: 'currentRouteId',
+        data: currentRouteId
+      })
+    } catch (error) {
+      // Error saving data
+      console.warn('err:' + error)
     }
   }
 
