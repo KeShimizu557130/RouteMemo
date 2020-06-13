@@ -43,6 +43,8 @@ export default class AppStorage {
   loadAllRoutes = async () => {
     let allRoutes: Route[]
     let currentRouteId: number
+    let drives: Drive[]
+
     try {
       allRoutes = await storage.load({ key: 'allRoutes' })
     } catch (error) {
@@ -69,8 +71,29 @@ export default class AppStorage {
       currentRouteId = -1
     }
 
+    try {
+      drives = await storage.load({ key: 'currentDrives' })
+    } catch (error) {
+      switch (error.name) {
+        case 'NotFoundError':
+          break
+        default:
+          console.warn('err:' + error)
+          break
+      }
+      drives = []
+    }
+
+    // currentDrivesをマージ
+    const allRoutes_merge = allRoutes.map(value => {
+      if (value.id !== currentRouteId) return value
+      const newRoute = {...value}
+      newRoute.drives = drives
+      return newRoute
+    })
+
     return {
-      allRoutes: allRoutes,
+      allRoutes: allRoutes_merge,
       currentRouteId: currentRouteId
     }
   }
