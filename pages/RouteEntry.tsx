@@ -51,7 +51,6 @@ const RouteArea = (props) => {
 const ButtonArea = () => {
   const allRoutes = useSelector<AppStateInterface>(state => state.route.allRoutes)
   const currentRoute = useSelector<AppStateInterface>(state => state.route.currentRoute)
-  const currentRouteId = useSelector<AppStateInterface>(state => state.route.currentRouteId)
   const dispatch = useDispatch()
 
   return (
@@ -78,7 +77,6 @@ const ButtonArea = () => {
   function dumpStore() {
     console.log('allRoutes:' + JSON.stringify(allRoutes))
     console.log('currentRoute:' + JSON.stringify(currentRoute))
-    console.log('currentRouteId:' + JSON.stringify(currentRouteId))
   }
 }
 

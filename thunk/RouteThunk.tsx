@@ -17,11 +17,11 @@ export const saveAllRoutes = () => {
   return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
     const state = getState().route
     const newRoutes = state.allRoutes.map(value => {
-      if (value.id !== state.currentRouteId) return value
+      if (value.id !== state.currentRoute.id) return value
       return { ...state.currentRoute }
     })
     if (newRoutes.length === 0) newRoutes.push(state.currentRoute)
-    appStorage.saveAllRoutes(newRoutes, state.currentRouteId)
+    appStorage.saveAllRoutes(newRoutes, state.currentRoute.id)
   }
 }
 
@@ -178,9 +178,9 @@ export const createRoute = () => {
   return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
     const state = getState().route
     // currentRouteを一旦allRoutesに保存する
-    // currentRouteIdがallRoutesに存在しない場合は、削除済みとかで無効なIDなので何もしない
+    // currentRouteがallRoutesに存在しない場合は、削除済みとかで無効なIDなので何もしない
     const newRoutes = state.allRoutes.map(value => {
-      if (value.id !== state.currentRouteId) return value
+      if (value.id !== state.currentRoute.id) return value
       return state.currentRoute
     })
 
@@ -210,7 +210,6 @@ export const loadAllRoutes = () => {
       if (typeof newCurrentRoute === 'undefined') {
         // ストレージにcurrentRouteIdが未記録、または記録されていても無効な値だった場合、現在のルートを新規生成
         newCurrentRoute = RouteImpl.newRoute()
-        newCurrentRouteId = newCurrentRoute.id
         newRoutes.push(newCurrentRoute)
       }
 
@@ -226,10 +225,10 @@ export const renameRoute = (routeId: number, newRouteName: string) => {
   return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
     const state = getState().route
     const newRoutes = renameRouteImpl(state.allRoutes, routeId, newRouteName)
-    if (state.currentRouteId !== routeId) {
+    if (state.currentRoute.id !== routeId) {
       // 変更するルートが現在のルートではない場合、allRoutesのみ更新
       dispatch(setAllRoute(newRoutes))
-      appStorage.saveAllRoutes(newRoutes, state.currentRouteId)
+      appStorage.saveAllRoutes(newRoutes, state.currentRoute.id)
     } else {
       // 変更するルートが現在のルートの場合、allRoutesとcurrentRouteを更新
       const newCurrentRoute = { ...state.currentRoute }
@@ -264,7 +263,7 @@ export const deleteRoute = (routeId: number) => {
     dispatch(setAllRoute(newRoutes))
     // currentRouteIdが削除されたルートの値だったとしても、気にしない。
     // ストレージから読み込む際など、currentRouteIdを使うタイミングで無効な値であっても対応できる処理を行うため。
-    appStorage.saveAllRoutes(newRoutes, getState().route.currentRouteId)
+    appStorage.saveAllRoutes(newRoutes, getState().route.currentRoute.id)
   }
 }
 
@@ -274,11 +273,11 @@ export const mergeCurrentRouteToAllRoute = () => {
 
     // 現在のルートをallRoutesに保存
     const newRoutes = state.allRoutes.map(val => {
-      if (val.id !== state.currentRouteId) return val
+      if (val.id !== state.currentRoute.id) return val
       return state.currentRoute
     })
     dispatch(setAllRoute(newRoutes))
-    appStorage.saveAllRoutes(newRoutes, state.currentRouteId)
+    appStorage.saveAllRoutes(newRoutes, state.currentRoute.id)
   }
 } 
 

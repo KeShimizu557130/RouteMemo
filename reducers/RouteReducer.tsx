@@ -5,7 +5,6 @@ import { Route, RouteImpl } from '../domains/Route'
 export interface RouteReducerInterface {
   allRoutes: Route[]
   currentRoute: Route
-  currentRouteId: number
 }
 
 /**
@@ -18,8 +17,7 @@ function setUpState(): RouteReducerInterface {
   newRoutes.push(newCurrentRoute)
   return {
     allRoutes: newRoutes,
-    currentRoute: newCurrentRoute,
-    currentRouteId: newCurrentRoute.id
+    currentRoute: newCurrentRoute
   }
 }
 
@@ -40,7 +38,6 @@ const routeModule = createSlice({
     },
     setCurrentRoute: (state: RouteReducerInterface, action: PayloadAction<Route>) => {
       state.currentRoute = action.payload
-      state.currentRouteId = action.payload.id
     },
     // ルート削除（未実装）
     deleteRoute: (state: RouteReducerInterface, action) => {

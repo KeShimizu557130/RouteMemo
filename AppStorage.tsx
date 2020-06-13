@@ -11,6 +11,12 @@ const storage = new Storage({
   sync: {}
 })
 
+/**
+ * Storage保存読込を行うクラス。
+ * RouteのStateを保存するが、微妙に保存形式が異なるので注意。
+ * State: allRoute, currentRoute
+ * Storage: allRoute, currentDrives, currentRouteId
+ */
 export default class AppStorage {
 
   saveCurrentDrives = (drives: Drive[]) => {
