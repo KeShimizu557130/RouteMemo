@@ -6,6 +6,7 @@ import DriveList from '../components/DriveList'
 import PointNameDialog from '../components/PointNameDialog'
 import { AppStateInterface } from '../store/store'
 import { addNewRecord, backRecord } from '../thunk/RouteThunk'
+import { FAB } from 'react-native-paper'
 
 /**
  * ApplicationComponent
@@ -55,8 +56,17 @@ const ButtonArea = () => {
 
   return (
     <View>
-      <Button title="Record" onPress={handleRecordBtnClick} />
-      <Button title="BackRecord" onPress={handleBackRecordBtnClick} />
+      <FAB
+        style={styles.recordButton}
+        icon="circle-edit-outline"
+        onPress={handleRecordBtnClick}
+      />
+      <FAB
+        style={styles.backButton}
+        small
+        icon="undo-variant"
+        onPress={handleBackRecordBtnClick}
+      />
     </View>
   )
 
@@ -109,5 +119,17 @@ const ModalArea = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1
+  },
+  recordButton: {
+    position: 'absolute',
+    margin: 16,
+    right: 10,
+    bottom: 10,
+  },
+  backButton: {
+    position: 'absolute',
+    margin: 16,
+    left: 10,
+    bottom: 10,
   }
 })
