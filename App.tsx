@@ -8,6 +8,7 @@ import RouteEntry from './pages/RouteEntry'
 import RouteHistory from './pages/RouteHistory'
 import DriveEdit from './pages/DriveEdit'
 import AppSettings from './pages/AppSettings'
+import { Provider as PaperProvider } from 'react-native-paper'
 
 const RootStack = createStackNavigator(
   {
@@ -31,7 +32,9 @@ const AppContainer = createAppContainer(RootStack)
 export default () => {
   return (
     <Provider store={store}>
-      <AppContainer />
+      <PaperProvider>
+        <AppContainer />
+      </PaperProvider>
     </Provider>
   )
 }

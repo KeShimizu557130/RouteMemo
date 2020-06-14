@@ -2,11 +2,12 @@ import * as React from 'react'
 import { View, Button, StyleSheet, FlatList } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
 import { Drive, DriveCondition } from '../domains/Drive'
+import { Route } from '../domains/Route'
 import DriveList from '../components/DriveList'
 import PointNameDialog from '../components/PointNameDialog'
 import { AppStateInterface } from '../store/store'
-import { addNewRecord, backRecord } from '../thunk/RouteThunk'
-import { FAB } from 'react-native-paper'
+import { addNewRecord, backRecord, createRoute, exportToMail, mergeCurrentRouteToAllRoute } from '../thunk/RouteThunk'
+import { FAB, Portal } from 'react-native-paper'
 
 /**
  * ApplicationComponent
@@ -50,8 +51,9 @@ const RouteArea = (props) => {
  * ボタン表示領域
  */
 const ButtonArea = () => {
-  const allRoutes = useSelector<AppStateInterface>(state => state.route.allRoutes)
-  const currentRoute = useSelector<AppStateInterface>(state => state.route.currentRoute)
+  const [isMenuOpen, setMenuOpen] = React.useState<boolean>(false)
+  const allRoutes: Route[] = useSelector<AppStateInterface>(state => state.route.allRoutes)
+  const currentRoute: Route = useSelector<AppStateInterface>(state => state.route.currentRoute)
   const dispatch = useDispatch()
 
   return (
@@ -59,26 +61,30 @@ const ButtonArea = () => {
       <FAB
         style={styles.recordButton}
         icon="circle-edit-outline"
-        onPress={handleRecordBtnClick}
+        onPress={() => dispatch(addNewRecord())}
       />
-      <FAB
-        style={styles.backButton}
-        small
-        icon="undo-variant"
-        onPress={handleBackRecordBtnClick}
-      />
+      <Portal>
+        <FAB.Group
+          style={styles.menuButton}
+          open={isMenuOpen}
+          icon={'menu'}
+          actions={[
+            { icon: 'book-remove', label: 'DeleteRoute', onPress: () => console.log('Pressed email') },
+            { icon: 'book-plus', label: 'NewRoute', onPress: () => dispatch(createRoute()) },
+            { icon: 'email', label: 'ExportRoute', onPress: handleExportRoute },
+            { icon: 'undo-variant', label: 'Back', onPress: () => dispatch(backRecord()) },
+          ]}
+          onStateChange={({ open }) => setMenuOpen(open)}
+          visible={true}
+          onPress={() => {}}
+        />
+      </Portal>
     </View>
   )
 
-  /**
-   * Recordボタン押下時の処理
-   */
-  function handleRecordBtnClick() {
-    dispatch(addNewRecord())
-  }
-
-  function handleBackRecordBtnClick() {
-    dispatch(backRecord())
+  function handleExportRoute() {
+    dispatch(mergeCurrentRouteToAllRoute())
+    dispatch(exportToMail(currentRoute.id))
   }
 
   /**
@@ -126,10 +132,9 @@ const styles = StyleSheet.create({
     right: 10,
     bottom: 10,
   },
-  backButton: {
+  menuButton: {
     position: 'absolute',
-    margin: 16,
-    left: 10,
-    bottom: 10,
-  }
+    paddingBottom: 90,
+    paddingRight: 10
+  },
 })

@@ -6,7 +6,7 @@ import { Route } from '../domains/Route'
 import { AppStateInterface } from '../store/store'
 import RouteHistoryListMenu, { ListMenuItem } from '../components/RouteHistoryListMenu'
 import RouteNameDialog from '../components/RouteNameDialog'
-import { createRoute, renameRoute, deleteRoute, loadRoute, openMail, mergeCurrentRouteToAllRoute } from '../thunk/RouteThunk'
+import { createRoute, renameRoute, deleteRoute, loadRoute, exportToMail, mergeCurrentRouteToAllRoute } from '../thunk/RouteThunk'
 import { NavigationScreenProp } from 'react-navigation'
 import { useFocusEffect } from '@react-navigation/native';
 
@@ -116,7 +116,7 @@ export default (props: RouteHistoryProps) => {
    * ルートエクスポート
    */
   function handleRouteExportExec() {
-    dispatch(openMail(selectedRouteId))
+    dispatch(exportToMail(selectedRouteId))
     setPopupmenuVisible(false)
   }
 }

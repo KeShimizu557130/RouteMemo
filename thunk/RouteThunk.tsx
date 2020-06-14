@@ -184,6 +184,7 @@ export const createRoute = () => {
       return state.currentRoute
     })
 
+    // const newRoutes = {...state.allRoutes}
     // currentRouteに新しいRouteを設定する
     const newCurrentRoute = RouteImpl.newRoute()
     newRoutes.push(newCurrentRoute)
@@ -324,7 +325,7 @@ export const updateDrive = (newDrive: Drive) => {
   }
 }
 
-export const openMail = (selectedRouteId: number) => {
+export const exportToMail = (selectedRouteId: number) => {
   return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
     const route = getState().route.currentRoute
     const csv = convertToCSV(route.drives)
