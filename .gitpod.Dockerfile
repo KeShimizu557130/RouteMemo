@@ -46,5 +46,6 @@ RUN expo install expo-mail-composer
 RUN expo install expo-file-system
 RUN npm install --save-exact native-base@2.13.8
 RUN expo install expo-font
+RUN yarn add react-native-paper
 RUN rm -rf /home/gitpod/.expo
 
