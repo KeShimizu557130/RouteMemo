@@ -1,20 +1,15 @@
 import * as React from 'react'
 import { TextInput, StyleSheet } from 'react-native'
 import { useSelector, useDispatch, useCallback } from 'react-redux'
-import { NavigationScreenProp } from 'react-navigation'
 import { Container, Header, Content, Button, List, ListItem, Left, Body, Right, Icon, Text } from 'native-base'
 import { AppStateInterface } from '../store/store'
 import { saveSetting } from '../thunk/SettingsThunk'
 import Prompt from '../components/Prompt'
 
-interface AppSettingsProps {
-  navigation: NavigationScreenProp<any, any>
-}
-
 /**
  * ApplicationComponent
  */
-export default (props: AppSettingsProps) => {
+export default () => {
   const settings = useSelector<AppStateInterface>(state => state.settings)
   const [isVisible, setVisible] = React.useState<boolean>(false)
   const [promptVal, setPromptVal] = React.useState<string>('')

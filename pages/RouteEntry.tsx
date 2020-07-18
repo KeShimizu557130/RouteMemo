@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { View, Button, StyleSheet, FlatList } from 'react-native'
+import { StyleSheet, FlatList } from 'react-native'
 import { useSelector, useDispatch } from 'react-redux'
 import { Drive, DriveCondition } from '../domains/Drive'
 import { Route } from '../domains/Route'
@@ -7,18 +7,21 @@ import DriveList from '../components/DriveList'
 import PointNameDialog from '../components/PointNameDialog'
 import { AppStateInterface } from '../store/store'
 import { addNewRecord, backRecord, createRoute, exportToMail, mergeCurrentRouteToAllRoute } from '../thunk/RouteThunk'
-import { FAB, Portal } from 'react-native-paper'
+import { Icon } from 'react-native-elements'
+import { Container, Header, View, Button, Text, Icon as NbIcon, Fab } from 'native-base'
 
 /**
  * ApplicationComponent
  */
 export default (props) => {
   return (
-    <View style={styles.container}>
-      <RouteArea navigation={props.navigation} />
-      <ButtonArea />
-      <ModalArea />
-    </View>
+    <Container>
+      <View style={styles.container}>
+        <RouteArea navigation={props.navigation} />
+        <ButtonArea />
+        <ModalArea />
+      </View>
+    </Container>
   )
 }
 
@@ -51,34 +54,44 @@ const RouteArea = (props) => {
  * ボタン表示領域
  */
 const ButtonArea = () => {
-  const [isMenuOpen, setMenuOpen] = React.useState<boolean>(false)
+  const [isFabOpen, setFabOpen] = React.useState<boolean>(false)
   const allRoutes: Route[] = useSelector<AppStateInterface>(state => state.route.allRoutes)
   const currentRoute: Route = useSelector<AppStateInterface>(state => state.route.currentRoute)
   const dispatch = useDispatch()
 
   return (
     <View>
-      <FAB
-        style={styles.recordButton}
-        icon="circle-edit-outline"
-        onPress={() => dispatch(addNewRecord())}
-      />
-      <Portal>
-        <FAB.Group
-          style={styles.menuButton}
-          open={isMenuOpen}
-          icon={'menu'}
-          actions={[
-            { icon: 'book-remove', label: 'DeleteRoute', onPress: () => console.log('Pressed email') },
-            { icon: 'book-plus', label: 'NewRoute', onPress: () => dispatch(createRoute()) },
-            { icon: 'email', label: 'ExportRoute', onPress: handleExportRoute },
-            { icon: 'undo-variant', label: 'Back', onPress: () => dispatch(backRecord()) },
-          ]}
-          onStateChange={({ open }) => setMenuOpen(open)}
-          visible={true}
-          onPress={() => {}}
-        />
-      </Portal>
+      <Icon
+        name='circle-edit-outline'
+        type='material-community'
+        color='#f50'
+        reverse
+        size={52}
+        containerStyle={styles.recordButton}
+        onPress={() => dispatch(addNewRecord())} />
+      
+      <Fab
+        active={isFabOpen}
+        direction="up"
+        containerStyle={{ }}
+        style={{ backgroundColor: '#5067FF' }}
+        position="bottomLeft"
+        onPress={() => setFabOpen(!isFabOpen)}>
+        <NbIcon name="bars" type="AntDesign" />
+        <Button style={{ backgroundColor: '#34A34F' }}>
+          <NbIcon name="book-remove" type="MaterialCommunityIcons" />
+        </Button>
+        <Button style={{ backgroundColor: '#3B5998' }} onPress={() => dispatch(createRoute()) }>
+          <NbIcon name="book-plus" type="MaterialCommunityIcons" />
+        </Button>
+        <Button style={{ backgroundColor: '#DD5144' }} onPress={handleExportRoute}>
+          <NbIcon name="email" type="MaterialCommunityIcons" />
+        </Button>
+        <Button style={{ backgroundColor: '#DD5144' }} onPress={() => dispatch(backRecord()) }>
+          <NbIcon name="undo-variant" type="MaterialCommunityIcons" />
+        </Button>
+      </Fab>
+        
     </View>
   )
 

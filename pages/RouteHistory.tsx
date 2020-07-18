@@ -8,7 +8,7 @@ import RouteHistoryListMenu, { ListMenuItem } from '../components/RouteHistoryLi
 import RouteNameDialog from '../components/RouteNameDialog'
 import { createRoute, renameRoute, deleteRoute, loadRoute, exportToMail, mergeCurrentRouteToAllRoute } from '../thunk/RouteThunk'
 import { NavigationScreenProp } from 'react-navigation'
-import { useFocusEffect } from '@react-navigation/native';
+import { useFocusEffect,  } from '@react-navigation/native'
 
 interface RouteHistoryProps {
   navigation: NavigationScreenProp<any, any>
