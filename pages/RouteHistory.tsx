@@ -40,7 +40,7 @@ export default (props: RouteHistoryProps) => {
   }]
 
   useFocusEffect(React.useCallback(() => {
-      console.debug("screen takes focus")
+      console.debug("RouteHistory useFocusEffect")
       dispatch(mergeCurrentRouteToAllRoute())
 
       return () => {}

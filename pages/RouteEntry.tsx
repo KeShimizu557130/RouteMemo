@@ -29,11 +29,11 @@ export default (props) => {
  * ルート表示領域
  */
 const RouteArea = (props) => {
-  const currentRoute = useSelector<AppStateInterface>(state => state.route.currentRoute)
+  const currentDrives = useSelector<AppStateInterface>(state => state.route.currentDrives)
 
   return (
     <FlatList<Drive>
-      data={currentRoute.drives}
+      data={currentDrives}
       renderItem={value => renderList(value.item)}
       keyExtractor={value => `${value.id}`}
     />
@@ -56,7 +56,7 @@ const RouteArea = (props) => {
 const ButtonArea = () => {
   const [isFabOpen, setFabOpen] = React.useState<boolean>(false)
   const allRoutes: Route[] = useSelector<AppStateInterface>(state => state.route.allRoutes)
-  const currentRoute: Route = useSelector<AppStateInterface>(state => state.route.currentRoute)
+  const currentRouteId: number = useSelector<AppStateInterface>(state => state.route.currentRouteId)
   const dispatch = useDispatch()
 
   return (
@@ -97,7 +97,7 @@ const ButtonArea = () => {
 
   function handleExportRoute() {
     dispatch(mergeCurrentRouteToAllRoute())
-    dispatch(exportToMail(currentRoute.id))
+    dispatch(exportToMail(currentRouteId))
   }
 
   /**
@@ -105,7 +105,7 @@ const ButtonArea = () => {
    */
   function dumpStore() {
     console.log('allRoutes:' + JSON.stringify(allRoutes))
-    console.log('currentRoute:' + JSON.stringify(currentRoute))
+    console.log('currentRoute:' + JSON.stringify(currentRouteId))
   }
 }
 
@@ -113,21 +113,21 @@ const ButtonArea = () => {
  * モーダル表示領域
  */
 const ModalArea = () => {
+  const currentDrives = useSelector<AppStateInterface>(state => state.route.currentDrives)
+  const defaultPointName = useSelector<AppStateInterface>(state => state.settings.defaultFirstPointName)
+
   return (
     <PointNameDialog isModalVisible={isModalVisible()} defaultPointName={getDefaultPointName()} />
   )
 
   function getDefaultPointName(): string {
-    const currentRoute = useSelector<AppStateInterface>(state => state.route.currentRoute)
-    const defaultPointName = useSelector<AppStateInterface>(state => state.settings.defaultFirstPointName)
-    if (currentRoute.drives.length === 1) return defaultPointName
+    if (currentDrives.length === 1) return defaultPointName
     else return ''
   }
 
   function isModalVisible(): boolean {
-    const currentRoute = useSelector<AppStateInterface>(state => state.route.currentRoute)
-    if (currentRoute.drives.length === 0) return false
-    const latestDrive = currentRoute.drives[currentRoute.drives.length - 1]
+    if (currentDrives.length === 0) return false
+    const latestDrive = currentDrives[currentDrives.length - 1]
     return latestDrive.mode === DriveCondition.WAIT_FOR_POINT_NAME
   }
 }

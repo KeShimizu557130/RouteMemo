@@ -38,7 +38,6 @@ export default (props: DriveListProps) => {
   }
 
   function dateToString(date: number): string {
-    // return ((typeof date === "undefined") ? "" : dateFormat.format(new Date(date), 'hh:mm'))
     if (typeof date === "undefined" || date === 0) {
         return ''
     } else {

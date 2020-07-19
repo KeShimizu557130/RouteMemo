@@ -13,9 +13,7 @@ const storage = new Storage({
 
 /**
  * Storage保存読込を行うクラス。
- * RouteのStateを保存するが、微妙に保存形式が異なるので注意。
- * State: allRoute, currentRoute
- * Storage: allRoute, currentDrives, currentRouteId
+ * キー: allRoutes, currentDrives, currentRouteId
  */
 export default class AppStorage {
 
@@ -42,16 +40,24 @@ export default class AppStorage {
     }
   }
 
-  saveAllRoutes = (routes: Route[], currentRouteId: number) => {
+  saveAllRoutes = (routes: Route[], currentDrives: Drive[], currentRouteId: number) => {
     try {
       storage.save({
         key: 'allRoutes',
         data: routes
       })
-      storage.save({
-        key: 'currentRouteId',
-        data: currentRouteId
-      })
+      if (typeof currentDrives !== 'undefined') {
+        storage.save({
+          key: 'currentDrives',
+          data: currentDrives
+        })
+      }
+      if (typeof currentRouteId !== 'undefined') {
+        storage.save({
+          key: 'currentRouteId',
+          data: currentRouteId
+        })
+      }
     } catch (error) {
       // Error saving data
       console.warn('err:' + error)

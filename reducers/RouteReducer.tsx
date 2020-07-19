@@ -3,8 +3,9 @@ import { Drive } from '../domains/Drive'
 import { Route, RouteImpl } from '../domains/Route'
 
 export interface RouteReducerInterface {
-  allRoutes: Route[]
-  currentRoute: Route
+  allRoutes: Route[]          // 全ルート
+  currentDrives: Drive[]      // 現在入力中のルート詳細
+  currentRouteId: number      // 現在入力中のルートのid
 }
 
 /**
@@ -17,7 +18,8 @@ function setUpState(): RouteReducerInterface {
   newRoutes.push(newCurrentRoute)
   return {
     allRoutes: newRoutes,
-    currentRoute: newCurrentRoute
+    currentDrives: newCurrentRoute.drives,
+    currentRouteId: newCurrentRoute.id
   }
 }
 
@@ -26,18 +28,14 @@ const routeModule = createSlice({
   initialState: initialState,
   reducers: {
     // currentRouteに新しいdrivesを設定する
-    setDrives: (state: RouteReducerInterface, action: PayloadAction<Drive[]>) => {
-      const newCurretRoute = {
-        ...state.currentRoute,
-        drives: action.payload
-      }
-      state.currentRoute = newCurretRoute
+    setCurrentDrives: (state: RouteReducerInterface, action: PayloadAction<Drive[]>) => {
+      state.currentDrives = action.payload
     },
     setAllRoute: (state: RouteReducerInterface, action: PayloadAction<Route[]>) => {
       state.allRoutes = action.payload
     },
-    setCurrentRoute: (state: RouteReducerInterface, action: PayloadAction<Route>) => {
-      state.currentRoute = action.payload
+    setCurrentRouteId: (state: RouteReducerInterface, action: PayloadAction<number>) => {
+      state.currentRouteId = action.payload
     },
     // ルート削除（未実装）
     deleteRoute: (state: RouteReducerInterface, action) => {
@@ -45,7 +43,7 @@ const routeModule = createSlice({
   }
 })
 
-export const { setDrives, setAllRoute, setCurrentRoute } = routeModule.actions
+export const { setCurrentDrives, setAllRoute, setCurrentRouteId } = routeModule.actions
 
 export default routeModule
 

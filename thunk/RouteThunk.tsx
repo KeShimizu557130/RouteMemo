@@ -2,7 +2,7 @@ import { Action, Dispatch } from 'redux'
 import { AppStateInterface } from '../store/store'
 import { Drive, DriveImpl, DriveCondition } from '../domains/Drive'
 import AppStorage from '../AppStorage'
-import { setDrives, setAllRoute, setCurrentRoute } from '../reducers/RouteReducer'
+import { setCurrentDrives, setAllRoute, setCurrentRouteId } from '../reducers/RouteReducer'
 import { Route, RouteImpl } from '../domains/Route'
 import * as MailComposer from 'expo-mail-composer'
 import * as FileSystem from 'expo-file-system'
@@ -11,24 +11,28 @@ import { dateFormat } from '../util/dateFormat'
 const appStorage = new AppStorage()
 
 /**
+ * Storeに変更がある／storeを変更する場合は、必ずStorageも更新する
+ */
+
+/**
  * サンプル処理
  */
-export const saveAllRoutes = () => {
-  return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
-    const state = getState().route
-    const newRoutes = state.allRoutes.map(value => {
-      if (value.id !== state.currentRoute.id) return value
-      return { ...state.currentRoute }
-    })
-    if (newRoutes.length === 0) newRoutes.push(state.currentRoute)
-    appStorage.saveAllRoutes(newRoutes, state.currentRoute.id)
-  }
-}
+// export const saveAllRoutes = () => {
+//   return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
+//     const state = getState().route
+//     const newRoutes = state.allRoutes.map(value => {
+//       if (value.id !== state.currentRoute.id) return value
+//       return { ...state.currentRoute }
+//     })
+//     if (newRoutes.length === 0) newRoutes.push(state.currentRoute)
+//     appStorage.saveAllRoutes(newRoutes, state.currentRoute.id)
+//   }
+// }
 
 export const addNewRecord = () => {
   return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
-    const newDrives: Drive[] = addNewRecordImpl(getState().route.currentRoute.drives)
-    dispatch(setDrives(newDrives))
+    const newDrives: Drive[] = addNewRecordImpl(getState().route.currentDrives)
+    dispatch(setCurrentDrives(newDrives))
     appStorage.saveCurrentDrives(newDrives)
   }
 }
@@ -36,15 +40,15 @@ export const addNewRecord = () => {
 export const addPointName = (pointName: string, pointMemo: string) => {
   return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
     const state = getState().route
-    const newDrives = state.currentRoute.drives.map((drive, index) => {
-      if (index !== state.currentRoute.drives.length - 1) return drive
+    const newDrives = state.currentDrives.map((drive, index) => {
+      if (index !== state.currentDrives.length - 1) return drive
       const newDrive = { ...drive }
       newDrive.pointName = pointName
       newDrive.pointMemo = pointMemo
       newDrive.mode = DriveCondition.WAIT_FOR_ARRIVAL
       return newDrive
     })
-    dispatch(setDrives(newDrives))
+    dispatch(setCurrentDrives(newDrives))
     appStorage.saveCurrentDrives(newDrives)
   }
 }
@@ -56,13 +60,13 @@ export const addPointNameCancel = () => {
   return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
     const state = getState().route
 
-    const newDrives = state.currentRoute.drives.map((drive, index) => {
-      if (index !== state.currentRoute.drives.length - 1) return drive
+    const newDrives = state.currentDrives.map((drive, index) => {
+      if (index !== state.currentDrives.length - 1) return drive
       const newDrive = { ...drive }
       newDrive.mode = DriveCondition.WAIT_FOR_POINT_NAME_CANCELED
       return newDrive
     })
-    dispatch(setDrives(newDrives))
+    dispatch(setCurrentDrives(newDrives))
     appStorage.saveCurrentDrives(newDrives)
   }
 }
@@ -148,7 +152,7 @@ const getLatestDrive = (drives: Drive[]): Drive => {
  */
 export const backRecord = () => {
   return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
-    const drives = getState().route.currentRoute.drives
+    const drives = getState().route.currentDrives
     const newDrives = drives.map((drive, index) => {
       if (index !== drives.length - 1) return drive
       return moveInputBack(drive)
@@ -157,7 +161,7 @@ export const backRecord = () => {
       // 到着時刻undefinedのときは、最後の要素を削除
       newDrives.pop()
     }
-    dispatch(setDrives(newDrives))
+    dispatch(setCurrentDrives(newDrives))
     appStorage.saveCurrentDrives(newDrives)
   }
 }
@@ -179,9 +183,11 @@ export const createRoute = () => {
     const state = getState().route
     // currentRouteを一旦allRoutesに保存する
     // currentRouteがallRoutesに存在しない場合は、削除済みとかで無効なIDなので何もしない
-    const newRoutes = state.allRoutes.map(value => {
-      if (value.id !== state.currentRoute.id) return value
-      return state.currentRoute
+    const newRoutes: Route[] = state.allRoutes.map(route => {
+      if (route.id !== state.currentRouteId) return route
+      const newRoute: Route = {...route}
+      newRoute.drives = state.currentDrives
+      return newRoute
     })
 
     // const newRoutes = {...state.allRoutes}
@@ -191,8 +197,9 @@ export const createRoute = () => {
     newRoutes.sort((a, b) => b.id - a.id)
 
     dispatch(setAllRoute(newRoutes))
-    dispatch(setCurrentRoute(newCurrentRoute))
-    appStorage.saveAllRoutes(newRoutes, newCurrentRoute.id)
+    dispatch(setCurrentDrives(newCurrentRoute.drives))
+    dispatch(setCurrentRouteId(newCurrentRoute.id))
+    appStorage.saveAllRoutes(newRoutes, newCurrentRoute.drives, newCurrentRoute.id)
   }
 }
 
@@ -207,15 +214,17 @@ export const loadAllRoutes = () => {
       const newRoutes = routesAndCurrent.allRoutes
       let newCurrentRouteId = routesAndCurrent.currentRouteId
       // 現在のルートを読み込み
-      let newCurrentRoute = newRoutes.find((value) => value.id === newCurrentRouteId)
+      let newCurrentRoute: Route = newRoutes.find(route => route.id === newCurrentRouteId)
       if (typeof newCurrentRoute === 'undefined') {
         // ストレージにcurrentRouteIdが未記録、または記録されていても無効な値だった場合、現在のルートを新規生成
         newCurrentRoute = RouteImpl.newRoute()
         newRoutes.push(newCurrentRoute)
+        newCurrentRouteId = newCurrentRoute.id
       }
 
       dispatch(setAllRoute(newRoutes))
-      dispatch(setCurrentRoute(newCurrentRoute))
+      dispatch(setCurrentDrives(newCurrentRoute.drives))
+      dispatch(setCurrentRouteId(newCurrentRouteId))
     } catch (error) {
       console.warn('err:' + error)
     }
@@ -226,18 +235,8 @@ export const renameRoute = (routeId: number, newRouteName: string) => {
   return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
     const state = getState().route
     const newRoutes = renameRouteImpl(state.allRoutes, routeId, newRouteName)
-    if (state.currentRoute.id !== routeId) {
-      // 変更するルートが現在のルートではない場合、allRoutesのみ更新
-      dispatch(setAllRoute(newRoutes))
-      appStorage.saveAllRoutes(newRoutes, state.currentRoute.id)
-    } else {
-      // 変更するルートが現在のルートの場合、allRoutesとcurrentRouteを更新
-      const newCurrentRoute = { ...state.currentRoute }
-      newCurrentRoute.routeName = newRouteName
-      dispatch(setAllRoute(newRoutes))
-      dispatch(setCurrentRoute(newCurrentRoute))
-      appStorage.saveAllRoutes(newRoutes, newCurrentRoute.id)
-    }
+    dispatch(setAllRoute(newRoutes))
+    appStorage.saveAllRoutes(newRoutes, undefined, undefined)
   }
 }
 
@@ -245,9 +244,9 @@ export const renameRoute = (routeId: number, newRouteName: string) => {
  * routes中のrouteIdで示すルートのルート名を変更します
  */
 const renameRouteImpl = (routes: Route[], routeId: number, newRouteName: string): Route[] => {
-  const newRoutes: Route[] = routes.map(value => {
-    if (value.id !== routeId) return value
-    const newRoute: Route = { ...value }
+  const newRoutes: Route[] = routes.map(route => {
+    if (route.id !== routeId) return route
+    const newRoute: Route = { ...route }
     newRoute.routeName = newRouteName
     return newRoute
   })
@@ -264,7 +263,7 @@ export const deleteRoute = (routeId: number) => {
     dispatch(setAllRoute(newRoutes))
     // currentRouteIdが削除されたルートの値だったとしても、気にしない。
     // ストレージから読み込む際など、currentRouteIdを使うタイミングで無効な値であっても対応できる処理を行うため。
-    appStorage.saveAllRoutes(newRoutes, getState().route.currentRoute.id)
+    appStorage.saveAllRoutes(newRoutes, undefined, undefined)
   }
 }
 
@@ -273,16 +272,20 @@ export const mergeCurrentRouteToAllRoute = () => {
     const state = getState().route
 
     // 現在のルートをallRoutesに保存
-    const newRoutes = state.allRoutes.map(val => {
-      if (val.id !== state.currentRoute.id) return val
-      return state.currentRoute
+    const newRoutes = state.allRoutes.map(route => {
+      if (route.id !== state.currentRouteId) return route
+      const newRoute = {
+        ...route,
+        drives: state.currentDrives
+      }
+      return newRoute
     })
     dispatch(setAllRoute(newRoutes))
-    appStorage.saveAllRoutes(newRoutes, state.currentRoute.id)
+    appStorage.saveAllRoutes(newRoutes, undefined, undefined)
   }
 } 
 
-export const loadRoute = (route: Route) => {
+export const loadRoute = (loadRoute: Route) => {
   return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
     const state = getState().route
 
@@ -291,16 +294,18 @@ export const loadRoute = (route: Route) => {
     // →この処理は RouteHistory.useFocusEffect に移動
 
     // 引数routeのidに対応するルートをcurrentRouteに設定する
-    const newRoute = { ...state.allRoutes.find(val => val.id === route.id) }
+    const newRoute = { ...state.allRoutes.find(route => route.id === loadRoute.id) }
     
-    dispatch(setCurrentRoute(newRoute))
+    dispatch(setCurrentDrives(newRoute.drives))
+    dispatch(setCurrentRouteId(newRoute.id))
+    appStorage.saveCurrentDrives(newRoute.drives)
     appStorage.saveCurrentRouteId(newRoute.id)
   }
 }
 
 export const updateDrive = (newDrive: Drive) => {
   return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
-    const currentDrives = getState().route.currentRoute.drives
+    const currentDrives = getState().route.currentDrives
     let updateIndex
     const newDrives = currentDrives.map((drive, index) => {
       if (drive.id === newDrive.id) {
@@ -320,14 +325,14 @@ export const updateDrive = (newDrive: Drive) => {
       prevDrive.driveTime = calcDriveTime(newDrive, prevDrive)
       newDrives[updateIndex - 1] = prevDrive
     }
-    dispatch(setDrives(newDrives))
+    dispatch(setCurrentDrives(newDrives))
     appStorage.saveCurrentDrives(newDrives)
   }
 }
 
 export const exportToMail = (selectedRouteId: number) => {
   return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
-    const route = getState().route.currentRoute
+    const route = getState().route.allRoutes.find(route => route.id === selectedRouteId)
     const csv = convertToCSV(route.drives)
 
     const uri = FileSystem.cacheDirectory + 'routeexport.csv'
