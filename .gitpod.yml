@@ -8,3 +8,7 @@ ports:
     onOpen: open-browser
   - port: 19002
     onOpen: open-browser
+
+tasks:
+  - init: npm install
+
