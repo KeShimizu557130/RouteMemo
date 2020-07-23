@@ -1,6 +1,6 @@
 FROM gitpod/workspace-full:latest
 
-USER root
+USER gitpod
 
 # Replace shell with bash so we can source files
 RUN rm /bin/sh && ln -s /bin/bash /bin/sh
@@ -29,4 +29,5 @@ RUN curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | ba
 ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
 ENV PATH      $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
+RUN npm install expo-cli --global
 
