@@ -29,7 +29,7 @@ RUN curl https://raw.githubusercontent.com/creationix/nvm/master/install.sh | ba
 ENV NODE_PATH $NVM_DIR/versions/node/v$NODE_VERSION/lib/node_modules
 ENV PATH      $NVM_DIR/versions/node/v$NODE_VERSION/bin:$PATH
 
-RUN npm install expo-cli --global
+RUN npm install -g expo-cli
 RUN npm install react-native-modal
 RUN npm install react-native-storage
 RUN npm install react-navigation
