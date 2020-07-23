@@ -39,6 +39,7 @@ RUN npm install react-redux
 RUN expo install react-native-gesture-handler react-native-reanimated
 RUN expo install react-native-safe-area-view react-native-safe-area-context
 RUN expo install @react-native-community/masked-view
+RUN expo install react-native-safe-area-context
 RUN npm install react-native-elements
 RUN npm install @reduxjs/toolkit
 RUN expo install @react-native-community/datetimepicker
@@ -46,6 +47,5 @@ RUN expo install expo-mail-composer
 RUN expo install expo-file-system
 RUN npm install --save-exact native-base@2.13.8
 RUN expo install expo-font
-RUN yarn add react-native-paper
 RUN rm -rf /home/gitpod/.expo
 
