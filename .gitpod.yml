@@ -10,6 +10,6 @@ ports:
     onOpen: open-browser
 
 tasks:
-  - command: npm install expo-cli --global
-    command: npm install
+  - init: npm install expo-cli --global
+    init: npm install
 
