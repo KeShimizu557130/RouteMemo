@@ -13,22 +13,6 @@ const appStorage = new AppStorage()
 /**
  * Storeに変更がある／storeを変更する場合は、必ずStorageも更新する
  */
-
-/**
- * サンプル処理
- */
-// export const saveAllRoutes = () => {
-//   return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
-//     const state = getState().route
-//     const newRoutes = state.allRoutes.map(value => {
-//       if (value.id !== state.currentRoute.id) return value
-//       return { ...state.currentRoute }
-//     })
-//     if (newRoutes.length === 0) newRoutes.push(state.currentRoute)
-//     appStorage.saveAllRoutes(newRoutes, state.currentRoute.id)
-//   }
-// }
-
 export const addNewRecord = () => {
   return (dispatch: Dispatch<Action>, getState: () => AppStateInterface) => {
     const newDrives: Drive[] = addNewRecordImpl(getState().route.currentDrives)

@@ -8,7 +8,7 @@ import RouteHistoryListMenu, { ListMenuItem } from '../components/RouteHistoryLi
 import RouteNameDialog from '../components/RouteNameDialog'
 import { createRoute, renameRoute, deleteRoute, loadRoute, exportToMail, mergeCurrentRouteToAllRoute } from '../thunk/RouteThunk'
 import { NavigationScreenProp } from 'react-navigation'
-import { useFocusEffect,  } from '@react-navigation/native'
+import { useFocusEffect } from '@react-navigation/native'
 
 interface RouteHistoryProps {
   navigation: NavigationScreenProp<any, any>
@@ -54,6 +54,7 @@ export default (props: RouteHistoryProps) => {
         onRouteLongTap={handleRouteLongTop} />
       <ButtonArea navigation={props.navigation} />
       <ModalArea
+        defaultRouteName={getDefaultRouteName()}
         isRoutenameDialogVisible={isRoutenameDialogVisible}
         onRenameOK={handleRouteRenameExec}
         onRenameCancel={() => setRoutenameDialogVisible(false)} />
@@ -85,6 +86,14 @@ export default (props: RouteHistoryProps) => {
   function handleRouteRenameExec(newRouteName: string) {
     dispatch(renameRoute(selectedRouteId, newRouteName))
     setRoutenameDialogVisible(false)
+  }
+
+  /**
+   * ルート名変更ダイアログに表示する初期ルート名
+   */
+  function getDefaultRouteName(): string {
+    const selectRoute: Route = allRoutes.find(route => route.id === selectedRouteId)
+    return (typeof selectRoute === 'undefined') ? '' : selectRoute.routeName
   }
 
   /**
@@ -169,10 +178,11 @@ const ButtonArea: React.FC<{ navigation: NavigationScreenProp<any, any> }> = ({ 
 /**
  * モーダル表示領域
  */
-const ModalArea: React.FC<{ isRoutenameDialogVisible: boolean, onRenameOK: (newRouteName: string) => void, onRenameCancel: () => void }> = ({ isRoutenameDialogVisible, onRenameOK, onRenameCancel }) => {
+const ModalArea: React.FC<{ defaultRouteName: string, isRoutenameDialogVisible: boolean, onRenameOK: (newRouteName: string) => void, onRenameCancel: () => void }> = ({ defaultRouteName, isRoutenameDialogVisible, onRenameOK, onRenameCancel }) => {
   return (
     <RouteNameDialog
       isModalVisible={isRoutenameDialogVisible}
+      defaultRouteName={defaultRouteName}
       onDialogOK={onRenameOK}
       onDialogCancel={onRenameCancel}
     />

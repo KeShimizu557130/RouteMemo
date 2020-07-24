@@ -6,20 +6,27 @@ import Modal from "react-native-modal"
  * プロパティ定義
  */
 export interface RouteNameDialogProps {
+  isModalVisible: boolean,
+  defaultRouteName: string,
   onDialogOK: (routeName) => void,
-  onDialogCancel: () => void,
-  isModalVisible: boolean
+  onDialogCancel: () => void
 }
 
 export default (props: RouteNameDialogProps) => {
   const [routeName, setRouteName] = React.useState<string>('')
+
+  React.useEffect(() => {
+    setRouteName(props.defaultRouteName)
+  }, [props.isModalVisible])
 
   return (
     <Modal isVisible={props.isModalVisible}>
       <View style={styles.container}>
         <View>
           <Text>ルート名</Text>
-          <TextInput style={styles.pointNameInput}
+          <TextInput
+            value={routeName}
+            style={styles.pointNameInput}
             onChangeText={(text) => setRouteName(text)} />
         </View>
         <View style={styles.pointNameDialogButtons}>
